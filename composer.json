@@ -1,0 +1,11 @@
+{
+    "name": "cafeteria/cafeteria_project_php",
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        },
+        "files": [
+            "bootstrap.php"
+        ]
+    }
+}
