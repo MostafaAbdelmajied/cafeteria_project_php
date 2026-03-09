@@ -1,2 +1,6 @@
 vendor/
 .env
+.idea
+firebase-debug.log
+composer.lock
+composer.phar
