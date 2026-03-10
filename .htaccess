@@ -1,0 +1,6 @@
+RewriteEngine On
+#RewriteBase /php/cafeteria_project_php/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
