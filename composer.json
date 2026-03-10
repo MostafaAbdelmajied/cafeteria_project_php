@@ -8,5 +8,8 @@
             "bootstrap.php",
             "helpers.php"
         ]
-    }
+    },
+  "require": {
+    "ext-fileinfo": "*"
+  }
 }
