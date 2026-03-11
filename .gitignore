@@ -4,4 +4,3 @@ vendor/
 firebase-debug.log
 composer.lock
 composer.phar
-storage/
