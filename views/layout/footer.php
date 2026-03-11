@@ -8,7 +8,7 @@ $includeAppJs = $includeAppJs ?? true;
     </script>
 <?php endif; ?>
 <?php if ($includeAppJs): ?>
-    <script src="assets/app.js"></script>
+    <script src="<?= url('/views/assets/app.js') ?>"></script>
 <?php endif; ?>
   </body>
 </html>

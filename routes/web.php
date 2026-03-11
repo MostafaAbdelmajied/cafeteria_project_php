@@ -1,6 +1,30 @@
 <?php
 
 use Src\Classes\Router;
+use Src\Controllers\AdminController;
+use Src\Controllers\AuthController;
+use Src\Controllers\Home\HomeController;
+use Src\Controllers\PasswordResetController;
 use Src\Controllers\UserController;
+use Src\Middleware\Guest;
+use Src\Middleware\TypeMiddleware;
 
-Router::get("/user", [UserController::class, "index"]);
+Router::group(['middleware' => Guest::class], function() {
+    Router::get("/login", [AuthController::class, "showLogin"]);
+    Router::post("/login", [AuthController::class, "login"]);
+    Router::get("/forgot-password", [PasswordResetController::class, "showForgotPassword"]);
+    Router::post("/forgot-password", [PasswordResetController::class, "sendResetLink"]);
+    Router::get("/reset-password", [PasswordResetController::class, "showResetPassword"]);
+    Router::post("/reset-password", [PasswordResetController::class, "resetPassword"]);
+});
+
+Router::group(['middleware' => TypeMiddleware::class . ':user'], function() {
+    Router::get("/", [HomeController::class, "index"]);
+    Router::get("/user", [UserController::class, "index"]);
+});
+
+Router::group(['middleware' => TypeMiddleware::class . ':admin'], function() {
+    Router::get("/admin", [AdminController::class, "index"]);
+});
+
+Router::get("/logout", [AuthController::class, "logout"]);

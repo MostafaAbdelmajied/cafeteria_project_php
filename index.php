@@ -9,4 +9,8 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 require_once __DIR__ . '/routes/web.php';
 
+date_default_timezone_set('Africa/Cairo');
+
+session_start();
+
 Router::resolve();

@@ -6,7 +6,7 @@ use Src\Exceptions\RouteNotFoundException;
 
 class Router{
     private static $routes = [];
-    private static $middleware = [];
+    private static $middleware = null;
 
     public static function register($method, $url , $action)
     {
@@ -14,8 +14,10 @@ class Router{
 
             static::$routes[$method][$url] = [
                 "action" => $action, 
-                "middleware" => static::$middleware
                 ];
+            if(! empty(static::$middleware)){
+                static::$routes[$method][$url]['middleware'] = static::$middleware;
+            }
         }
     }
 
@@ -37,11 +39,12 @@ class Router{
 
         $callback();
 
-        static::$middleware = [];
+        static::$middleware = null;
     }
 
     public static function resolve()
     {
+        
         $method = $_SERVER['REQUEST_METHOD'];
         $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $basePath = dirname($_SERVER['SCRIPT_NAME']);
@@ -52,17 +55,10 @@ class Router{
         if(isset(static::$routes[$method][$url])){
             $route = static::$routes[$method][$url];
             $action = $route['action'];
-            $middleware = $route['middleware'];
+            $middleware = isset($route['middleware']) ? $route['middleware'] : null;
 
-            foreach ($middleware as $m) {
-                [$m, $param] = explode(":", $m);
-                
-                if(! empty($params)){
-                    (new $m())->handle($param);
-                }else{
-                    (new $m())->handle();
-                }
-            }
+            if($middleware) 
+                static::handleMiddleware($middleware);
 
             [$class, $method] = $action;
             if(class_exists($class) && method_exists($class, $method)){
@@ -71,7 +67,29 @@ class Router{
             }
 
         }else{
-            throw new RouteNotFoundException();
+            throw new RouteNotFoundException($url);
         }
+    }
+
+    public static function handleMiddleware($middleware)
+    {
+        if(is_array($middleware)){
+            foreach ($middleware as $m) {
+                static::runMiddleware($m);
+            }
+        }else{
+            static::runMiddleware($middleware);
+        }
+    }
+
+    private static function runMiddleware($middleware)
+    {
+        $parts = explode(":", $middleware);
+        $class = $parts[0];
+        $param = $parts[1] ?? null;
+
+        $instance = new $class();
+
+        $param ? $instance->handle($param) : $instance->handle();
     }
 }
