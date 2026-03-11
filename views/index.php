@@ -227,12 +227,12 @@ $inlineScript = <<<'JS'
               </div>
               <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-sm">
-                  <button class="text-brand-600" data-action="dec" data-id="${item.id}">-</button>
+                  <button type="button" class="text-brand-600" data-action="dec" data-id="${item.id}">-</button>
                   <span>${item.qty}</span>
-                  <button class="text-brand-600" data-action="inc" data-id="${item.id}">+</button>
+                  <button type="button" class="text-brand-600" data-action="inc" data-id="${item.id}">+</button>
                 </div>
                 <span class="font-semibold text-slate-700">${currency(item.price * item.qty)}</span>
-                <button class="text-xs text-red-500" data-action="remove" data-id="${item.id}">x</button>
+                <button type="button" class="text-xs text-red-500" data-action="remove" data-id="${item.id}">x</button>
               </div>
             `;
 
@@ -329,6 +329,7 @@ $inlineScript = <<<'JS'
           const actionBtn = event.target.closest('[data-action]');
           if (!actionBtn) return;
 
+          const products = getProducts();
           const id = actionBtn.getAttribute('data-id');
           const product = products.find((item) => item.id === id) || cart.get(id);
           if (!product) return;
