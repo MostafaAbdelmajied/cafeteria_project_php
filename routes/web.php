@@ -4,12 +4,13 @@ use Src\Classes\Router;
 use Src\Controllers\AdminController;
 use Src\Controllers\AuthController;
 use Src\Controllers\Home\HomeController;
+use Src\Controllers\OrderController;
 use Src\Controllers\PasswordResetController;
 use Src\Controllers\UserController;
 use Src\Middleware\Guest;
 use Src\Middleware\TypeMiddleware;
 
-Router::group(['middleware' => Guest::class], function() {
+Router::group(['middleware' => Guest::class], function () {
     Router::get("/login", [AuthController::class, "showLogin"]);
     Router::post("/login", [AuthController::class, "login"]);
     Router::get("/forgot-password", [PasswordResetController::class, "showForgotPassword"]);
@@ -18,18 +19,21 @@ Router::group(['middleware' => Guest::class], function() {
     Router::post("/reset-password", [PasswordResetController::class, "resetPassword"]);
 });
 
-Router::group(['middleware' => TypeMiddleware::class . ':user'], function() {
+Router::group(['middleware' => TypeMiddleware::class . ':user'], function () {
     Router::get("/", [HomeController::class, "index"]);
     Router::get("/user", [UserController::class, "index"]);
+    Router::get("/order-confirm", [OrderController::class, "confirm"]);
+    Router::post("/order-confirm", [OrderController::class, "confirm"]);
+    Router::post("/order-submit", [OrderController::class, "submit"]);
 
-//admin routes
-Router::get("/admin", [AdminController::class,"index"]);
-Router::get("/admin/products", [AdminController::class, "adminProducts"]);
-Router::get("/admin/orders", [AdminController::class, "adminOrders"]);
-Router::get("/admin/users", [AdminController::class, "adminUsers"]);
+    //admin routes
+    Router::get("/admin", [AdminController::class, "index"]);
+    Router::get("/admin/products", [AdminController::class, "adminProducts"]);
+    Router::get("/admin/orders", [AdminController::class, "adminOrders"]);
+    Router::get("/admin/users", [AdminController::class, "adminUsers"]);
 });
 
-Router::group(['middleware' => TypeMiddleware::class . ':admin'], function() {
+Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
     Router::get("/admin", [AdminController::class, "index"]);
 });
 
