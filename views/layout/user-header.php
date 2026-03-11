@@ -1,10 +1,10 @@
 <?php
 $activePage = $activePage ?? '';
-$currentUser = $currentUser ?? 'Islam Askar';
+//$currentUser = $currentUser ?? 'Islam Askar';
 $brandSubtitle = 'Order Management';
 $navigationItems = [
-    ['href' => 'index.php', 'label' => 'Home', 'active' => $activePage === 'home'],
-    ['href' => 'my-orders.php', 'label' => 'My Orders', 'active' => $activePage === 'my-orders'],
+    ['href' => url('/'), 'label' => 'Home', 'active' => $activePage === 'home'],
+    ['href' => url('/my-orders'), 'label' => 'My Orders', 'active' => $activePage === 'my-orders'],
 ];
 $headerContainerClass = 'mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4';
 

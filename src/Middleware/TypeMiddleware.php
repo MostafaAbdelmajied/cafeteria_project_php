@@ -3,6 +3,7 @@
 namespace Src\Middleware;
 
 use Src\Classes\Auth;
+use Src\Exceptions\PermissionDeniedException;
 
 class TypeMiddleware
 {
@@ -16,11 +17,11 @@ class TypeMiddleware
         $isAdmin = (bool) ($user['is_admin'] ?? false);
 
         if ($type === 'admin' && !$isAdmin) {
-            redirect(url('/'));
+            throw new PermissionDeniedException();
         }
 
         if ($type === 'user' && $isAdmin) {
-            redirect(url('/admin'));
+            throw new PermissionDeniedException();
         }
     }
 }

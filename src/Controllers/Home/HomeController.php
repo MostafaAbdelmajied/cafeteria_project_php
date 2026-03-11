@@ -51,7 +51,7 @@ class HomeController
         if (isset($_GET['partial']) && $_GET['partial'] === 'products') {
             return view('partials/products-grid.php', compact('products', 'searchTerm'));
         }
-
-        return view('index.php', compact('products', 'searchTerm', 'rooms'));
+        $activePage = 'home';
+        return view('index.php', compact('products', 'searchTerm', 'rooms', 'activePage'));
     }
 }

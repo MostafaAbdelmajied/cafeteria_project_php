@@ -9,7 +9,8 @@ class AdminController
 {
     function index()
     {
-        view("admin.php");
+        $activePage = 'home';
+        return view("admin.php", compact("activePage"));
     }
 
     function adminProducts()
@@ -20,12 +21,14 @@ class AdminController
         $totalProducts = Product::query()->count();
         $totalPages = (int)ceil($totalProducts / $perPage);
         $products = Product::query()->limit($perPage)->offset($offset)->get();
-        view("admin-products.php", compact("products", "totalPages", "currentPage"));
+        $activePage = 'products';
+        return view("admin-products.php", compact("products", "totalPages", "currentPage", "activePage"));
     }
 
     function adminOrders()
     {
-        view("admin-orders.php");
+        $activePage = 'orders';
+        return view("admin-orders.php", compact("activePage"));
     }
 
     function adminUsers()
@@ -36,6 +39,7 @@ class AdminController
         $totalUsers = User::query()->count();
         $totalPages = (int)ceil($totalUsers / $perPage);
         $users = User::query()->limit($perPage)->offset($offset)->get();
-        view("admin-users.php", compact('users', "currentPage", "totalPages"));
+        $activePage = 'users';
+        return view("admin-users.php", compact('users', "currentPage", "totalPages", "activePage"));
     }
 }

@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Cafeteria | Not Found';
-require __DIR__ . '/layout/header.php';
+require __DIR__ . '/../layout/header.php';
 ?>
     <main class="flex min-h-screen items-center justify-center px-6">
       <div class="max-w-md rounded-3xl bg-white/90 p-10 text-center shadow-2xl shadow-orange-100">
@@ -10,4 +10,4 @@ require __DIR__ . '/layout/header.php';
         <a href="index.php" class="mt-6 inline-flex rounded-full bg-brand-600 px-5 py-2 text-xs font-semibold text-white">Return to Home</a>
       </div>
     </main>
-<?php require __DIR__ . '/layout/footer.php'; ?>
+<?php require __DIR__ . '/../layout/footer.php'; ?>

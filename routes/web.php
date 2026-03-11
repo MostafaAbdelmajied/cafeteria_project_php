@@ -27,15 +27,14 @@ Router::group(['middleware' => TypeMiddleware::class . ':user'], function () {
     Router::post("/order-cancel", [OrderController::class, "cancel"]);
     Router::post("/order-submit", [OrderController::class, "submit"]);
 
+});
+
+Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
     //admin routes
     Router::get("/admin", [AdminController::class, "index"]);
     Router::get("/admin/products", [AdminController::class, "adminProducts"]);
     Router::get("/admin/orders", [AdminController::class, "adminOrders"]);
     Router::get("/admin/users", [AdminController::class, "adminUsers"]);
-});
-
-Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
-    Router::get("/admin", [AdminController::class, "index"]);
 });
 
 Router::get("/logout", [AuthController::class, "logout"]);
