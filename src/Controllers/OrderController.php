@@ -17,6 +17,55 @@ class OrderController
         redirect(url($path));
     }
 
+    private function getAllowedRooms(): array
+    {
+        $stmt = DB::conn()->query(
+            "SELECT DISTINCT room_no FROM users WHERE room_no IS NOT NULL AND room_no <> '' ORDER BY room_no"
+        );
+
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    private function validatePendingPayload(array $payload, string $redirectPath = '/'): array
+    {
+        if (empty($payload['items']) || !is_array($payload['items']) || count($payload['items']) === 0) {
+            $this->redirectWithOrderError('Your cart must not be empty.', $redirectPath);
+        }
+
+        $note = trim((string) ($payload['note'] ?? ''));
+        if (strlen($note) > 1000) {
+            $this->redirectWithOrderError('Notes must be 1000 characters or fewer.', $redirectPath);
+        }
+
+        $room = trim((string) ($payload['room'] ?? ''));
+        if ($room === '') {
+            $this->redirectWithOrderError('Room is required.', $redirectPath);
+        }
+
+        $allowedRooms = $this->getAllowedRooms();
+        if (!in_array($room, $allowedRooms, true)) {
+            $this->redirectWithOrderError('Selected room is invalid.', $redirectPath);
+        }
+
+        foreach ($payload['items'] as $item) {
+            $productId = (int) ($item['id'] ?? 0);
+            $quantity = (int) ($item['qty'] ?? 0);
+
+            if ($productId <= 0) {
+                $this->redirectWithOrderError('One or more selected products are invalid.', $redirectPath);
+            }
+
+            if ($quantity < 1) {
+                $this->redirectWithOrderError('Quantity must be at least 1.', $redirectPath);
+            }
+        }
+
+        return [
+            'note' => $note,
+            'room' => $room,
+        ];
+    }
+
     public function confirm()
     {
         // Handle POST from cart page, set session order data and redirect back to GET
@@ -30,19 +79,12 @@ class OrderController
                 $payload = json_decode($_POST['cart_data'], true) ?: [];
             }
 
-            if (empty($payload['items']) || !is_array($payload['items']) || count($payload['items']) === 0) {
-                $this->redirectWithOrderError('Your cart must not be empty.', '/');
-            }
-
-            $room = trim((string) ($payload['room'] ?? ''));
-            if ($room === '') {
-                $this->redirectWithOrderError('Room is required.', '/');
-            }
+            $validated = $this->validatePendingPayload($payload, '/');
 
             $_SESSION['cafeteria_pending_order'] = $payload;
             $_SESSION['cafeteria_cart'] = $payload['items'];
-            $_SESSION['cafeteria_note'] = $payload['note'] ?? '';
-            $_SESSION['cafeteria_room'] = $room;
+            $_SESSION['cafeteria_note'] = $validated['note'];
+            $_SESSION['cafeteria_room'] = $validated['room'];
 
             redirect(url('/order-confirm'));
         }
@@ -69,10 +111,9 @@ class OrderController
             $this->redirectWithOrderError('Your cart must not be empty.', '/');
         }
 
-        $room = trim((string) ($pending['room'] ?? ''));
-        if ($room === '') {
-            $this->redirectWithOrderError('Room is required.');
-        }
+        $validated = $this->validatePendingPayload($pending);
+        $room = $validated['room'];
+        $note = $validated['note'];
 
         $pdo = DB::conn();
 
@@ -127,7 +168,7 @@ class OrderController
                 'order_date' => date('Y-m-d H:i:s'),
                 'status' => 'Processing',
                 'total_amount' => number_format($totalAmount, 2, '.', ''),
-                'notes' => trim((string) ($pending['note'] ?? '')),
+                'notes' => $note,
                 'delivery_room' => $room,
                 'user_id' => (int) $user['id'],
             ]);
