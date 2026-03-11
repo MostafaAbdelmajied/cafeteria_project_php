@@ -65,6 +65,10 @@ $pending = (isset($pendingOrder) && is_array($pendingOrder)) ? $pendingOrder : [
                 <form method="post" action="<?= url('/order-submit'); ?>" class="flex flex-wrap gap-3">
                     <button class="rounded-2xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-700"
                         type="submit">Confirm Order</button>
+                </form>
+                <form method="post" action="<?= url('/order-cancel'); ?>" class="flex flex-wrap gap-3">
+                    <button class="rounded-2xl border border-red-200 px-6 py-3 text-sm font-semibold text-red-600 hover:bg-red-50"
+                        type="submit">Cancel Order</button>
                     <a href="<?= url('/'); ?>"
                         class="rounded-2xl border border-orange-200 px-6 py-3 text-sm font-semibold text-slate-600">Back to
                         Cart</a>

@@ -24,6 +24,7 @@ Router::group(['middleware' => TypeMiddleware::class . ':user'], function () {
     Router::get("/user", [UserController::class, "index"]);
     Router::get("/order-confirm", [OrderController::class, "confirm"]);
     Router::post("/order-confirm", [OrderController::class, "confirm"]);
+    Router::post("/order-cancel", [OrderController::class, "cancel"]);
     Router::post("/order-submit", [OrderController::class, "submit"]);
 
     //admin routes

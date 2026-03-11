@@ -7,6 +7,7 @@ use Src\Classes\DB;
 use Src\Models\OrderItemModel;
 use Src\Models\OrderModel;
 use Src\Models\Product;
+use Src\Models\User;
 use Throwable;
 
 class OrderController
@@ -19,11 +20,20 @@ class OrderController
 
     private function getAllowedRooms(): array
     {
-        $stmt = DB::conn()->query(
-            "SELECT DISTINCT room_no FROM users WHERE room_no IS NOT NULL AND room_no <> '' ORDER BY room_no"
-        );
+        //  "SELECT DISTINCT room_no FROM users WHERE room_no IS NOT NULL AND room_no <> '' ORDER BY room_no"
+        $users = User::all(['room_no']);
+        $rooms = [];
 
-        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        foreach ($users as $user) {
+            $roomNo = trim((string) ($user['room_no'] ?? ''));
+            if ($roomNo !== '') {
+                $rooms[$roomNo] = $roomNo;
+            }
+        }
+
+        ksort($rooms);
+
+        return array_values($rooms);
     }
 
     private function validatePendingPayload(array $payload, string $redirectPath = '/'): array
@@ -208,6 +218,23 @@ class OrderController
 
         $_SESSION['order_success'] = 'Your order has been confirmed.';
         $_SESSION['clear_order_storage'] = true;
+        redirect(url('/'));
+    }
+
+    public function cancel()
+    {
+        if (!Auth::check()) {
+            redirect(url('/login'));
+        }
+
+        unset($_SESSION['cafeteria_pending_order']);
+        unset($_SESSION['cafeteria_cart']);
+        unset($_SESSION['cafeteria_note']);
+        unset($_SESSION['cafeteria_room']);
+
+        $_SESSION['order_success'] = 'Your pending order has been canceled.';
+        $_SESSION['clear_order_storage'] = true;
+
         redirect(url('/'));
     }
 }
