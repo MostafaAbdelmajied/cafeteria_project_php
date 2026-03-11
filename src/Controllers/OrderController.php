@@ -4,28 +4,45 @@ namespace Src\Controllers;
 
 use Src\Classes\Auth;
 use Src\Classes\DB;
+use Src\Models\OrderItemModel;
+use Src\Models\OrderModel;
+use Src\Models\Product;
 use Throwable;
 
 class OrderController
 {
+    private function redirectWithOrderError(string $message, string $path = '/order-confirm'): void
+    {
+        $_SESSION['order_error'] = $message;
+        redirect(url($path));
+    }
+
     public function confirm()
     {
         // Handle POST from cart page, set session order data and redirect back to GET
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!Auth::check()) {
+                redirect(url('/login'));
+            }
+
             $payload = [];
             if (!empty($_POST['cart_data'])) {
                 $payload = json_decode($_POST['cart_data'], true) ?: [];
             }
 
-            if (empty($payload['items']) || count($payload['items']) === 0) {
-                // no items: redirect back to home
-                redirect(url('/'));
+            if (empty($payload['items']) || !is_array($payload['items']) || count($payload['items']) === 0) {
+                $this->redirectWithOrderError('Your cart must not be empty.', '/');
+            }
+
+            $room = trim((string) ($payload['room'] ?? ''));
+            if ($room === '') {
+                $this->redirectWithOrderError('Room is required.', '/');
             }
 
             $_SESSION['cafeteria_pending_order'] = $payload;
             $_SESSION['cafeteria_cart'] = $payload['items'];
             $_SESSION['cafeteria_note'] = $payload['note'] ?? '';
-            $_SESSION['cafeteria_room'] = $payload['room'] ?? '';
+            $_SESSION['cafeteria_room'] = $room;
 
             redirect(url('/order-confirm'));
         }
@@ -49,7 +66,12 @@ class OrderController
         }
 
         if (!$pending || empty($pending['items']) || !is_array($pending['items'])) {
-            redirect(url('/'));
+            $this->redirectWithOrderError('Your cart must not be empty.', '/');
+        }
+
+        $room = trim((string) ($pending['room'] ?? ''));
+        if ($room === '') {
+            $this->redirectWithOrderError('Room is required.');
         }
 
         $pdo = DB::conn();
@@ -63,8 +85,12 @@ class OrderController
                 $productId = (int) ($item['id'] ?? 0);
                 $quantity = (int) ($item['qty'] ?? 0);
 
-                if ($productId <= 0 || $quantity <= 0) {
-                    throw new \RuntimeException('The order contains invalid items.');
+                if ($productId <= 0) {
+                    throw new \RuntimeException('One or more selected products are invalid.');
+                }
+
+                if ($quantity < 1) {
+                    throw new \RuntimeException('Quantity must be at least 1.');
                 }
 
                 $productIds[] = $productId;
@@ -74,12 +100,9 @@ class OrderController
                 ];
             }
 
-            $placeholders = implode(', ', array_fill(0, count($productIds), '?'));
-            $productsStmt = $pdo->prepare(
-                "SELECT id, price, is_available FROM products WHERE id IN ($placeholders)"
-            );
-            $productsStmt->execute($productIds);
-            $products = $productsStmt->fetchAll(\PDO::FETCH_ASSOC);
+            $products = Product::query()
+                ->whereIn('id', $productIds)
+                ->get(['id', 'price', 'is_available']);
 
             if (count($products) !== count($normalizedItems)) {
                 throw new \RuntimeException('One or more products could not be found.');
@@ -100,30 +123,32 @@ class OrderController
 
             $pdo->beginTransaction();
 
-            $orderStmt = $pdo->prepare(
-                'INSERT INTO orders (order_date, status, total_amount, notes, delivery_room, user_id) VALUES (NOW(), ?, ?, ?, ?, ?)'
-            );
-            $orderStmt->execute([
-                'Processing',
-                number_format($totalAmount, 2, '.', ''),
-                trim((string) ($pending['note'] ?? '')),
-                trim((string) ($pending['room'] ?? ($user['room_no'] ?? ''))),
-                (int) $user['id'],
+            $order = OrderModel::create([
+                'order_date' => date('Y-m-d H:i:s'),
+                'status' => 'Processing',
+                'total_amount' => number_format($totalAmount, 2, '.', ''),
+                'notes' => trim((string) ($pending['note'] ?? '')),
+                'delivery_room' => $room,
+                'user_id' => (int) $user['id'],
             ]);
 
-            $orderId = (int) $pdo->lastInsertId();
+            if (!$order || empty($order['id'])) {
+                throw new \RuntimeException('The order could not be saved.');
+            }
 
-            $itemStmt = $pdo->prepare(
-                'INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)'
-            );
+            $orderId = (int) $order['id'];
 
             foreach ($normalizedItems as $item) {
-                $itemStmt->execute([
-                    $orderId,
-                    $item['product_id'],
-                    $item['quantity'],
-                    number_format($item['unit_price'], 2, '.', ''),
+                $savedItem = OrderItemModel::create([
+                    'order_id' => $orderId,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => number_format($item['unit_price'], 2, '.', ''),
                 ]);
+
+                if ($savedItem === false) {
+                    throw new \RuntimeException('One or more order items could not be saved.');
+                }
             }
 
             $pdo->commit();
@@ -132,8 +157,7 @@ class OrderController
                 $pdo->rollBack();
             }
 
-            $_SESSION['order_error'] = $e->getMessage();
-            redirect(url('/order-confirm'));
+            $this->redirectWithOrderError($e->getMessage());
         }
 
         unset($_SESSION['cafeteria_pending_order']);

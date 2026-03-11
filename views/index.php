@@ -1,11 +1,20 @@
 <?php
 $pageTitle = 'Cafeteria | Home';
+$savedNote = (string) ($_SESSION['cafeteria_note'] ?? '');
+$savedRoom = (string) ($_SESSION['cafeteria_room'] ?? '');
 require __DIR__ . '/layout/header.php';
 $activePage = 'home';
 require __DIR__ . '/layout/user-header.php';
 ?>
 
 <main class="mx-auto w-full max-w-6xl px-6 py-10">
+  <?php if (isset($_SESSION['order_error'])): ?>
+    <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      <?= htmlspecialchars($_SESSION['order_error'], ENT_QUOTES, 'UTF-8'); ?>
+    </div>
+    <?php unset($_SESSION['order_error']); ?>
+  <?php endif; ?>
+
   <?php if (isset($_SESSION['order_success'])): ?>
     <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
       <?= htmlspecialchars($_SESSION['order_success'], ENT_QUOTES, 'UTF-8'); ?>
@@ -29,7 +38,8 @@ require __DIR__ . '/layout/user-header.php';
           <textarea
             name="notes"
             class="mt-2 w-full rounded-2xl border border-orange-100 bg-white/70 p-3 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-orange-100"
-            rows="3" placeholder="e.g. Extra sugar"></textarea>
+            rows="3"
+            placeholder="e.g. Extra sugar"><?= htmlspecialchars($savedNote, ENT_QUOTES, 'UTF-8'); ?></textarea>
         </div>
 
         <div data-field>
@@ -37,11 +47,11 @@ require __DIR__ . '/layout/user-header.php';
           <select required name="room"
             class="mt-2 w-full rounded-2xl border border-orange-100 bg-white/70 p-3 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-orange-100">
             <option value="">Select a room</option>
-            <option>2010</option>
-            <option>2011</option>
-            <option>2012</option>
-            <option>3010</option>
-            <option>3011</option>
+            <?php foreach (($rooms ?? []) as $room): ?>
+              <option value="<?= htmlspecialchars($room, ENT_QUOTES, 'UTF-8'); ?>" <?= $savedRoom === (string) $room ? 'selected' : ''; ?>>
+                <?= htmlspecialchars($room, ENT_QUOTES, 'UTF-8'); ?>
+              </option>
+            <?php endforeach; ?>
           </select>
           <p class="mt-1 hidden text-xs text-red-600" data-error></p>
         </div>
@@ -69,49 +79,24 @@ require __DIR__ . '/layout/user-header.php';
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">Menu</p>
           <h2 class="text-2xl font-semibold">Pick your favorites</h2>
         </div>
-        <div class="flex items-center gap-2 rounded-full border border-orange-100 bg-white px-4 py-2 text-sm">
-          <span>🔍</span>
-          <input class="w-40 bg-transparent text-sm focus:outline-none" placeholder="Search products..." />
-        </div>
+        <form method="get" action="<?= url('/'); ?>" class="flex items-center gap-2 rounded-full border border-orange-100 bg-white px-4 py-2 text-sm" data-search-form>
+          <span>Search</span>
+          <input
+            name="search"
+            value="<?= htmlspecialchars($searchTerm ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+            class="w-40 bg-transparent text-sm focus:outline-none"
+            placeholder="Search products..." />
+          <button type="submit" class="rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold text-white hover:bg-brand-700">
+            Go
+          </button>
+          <?php if (!empty($searchTerm)): ?>
+            <a href="<?= url('/'); ?>" class="text-xs font-medium text-slate-500 hover:text-brand-600">Clear</a>
+          <?php endif; ?>
+        </form>
       </div>
 
-      <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <?php if (!empty($products) && is_array($products)): ?>
-          <?php foreach ($products as $product): ?>
-            <div
-              class="rounded-3xl border border-orange-100 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-              data-product data-id="<?= htmlspecialchars($product['id']); ?>"
-              data-name="<?= htmlspecialchars($product['name']); ?>"
-              data-price="<?= htmlspecialchars($product['price']); ?>">
-              <?php if (!empty($product['product_picture'])):
-                $picturePath = $product['product_picture'];
-                if (!str_starts_with($picturePath, '/')) {
-                  $picturePath = '/' . $picturePath;
-                }
-                $pictureUrl = url($picturePath);
-                ?>
-                <img src="<?= htmlspecialchars($pictureUrl); ?>" alt="<?= htmlspecialchars($product['name']); ?>"
-                  class="mx-auto h-20 w-20 object-cover rounded-xl" />
-              <?php else: ?>
-                <div class="text-3xl text-center">🛍️</div>
-              <?php endif; ?>
-              <p class="mt-3 font-semibold"><?= htmlspecialchars($product['name']); ?></p>
-              <?php if (!empty($product['category_name'])): ?>
-                <p class="text-xs text-slate-400">Category: <?= htmlspecialchars($product['category_name']); ?></p>
-              <?php endif; ?>
-              <div class="mt-2 flex items-center justify-between">
-                <p class="text-sm text-slate-500"><?= number_format((float) $product['price'], 2); ?> LE</p>
-                <button type="button"
-                  class="rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold text-white hover:bg-brand-700"
-                  data-action="add">Add</button>
-              </div>
-            </div>
-          <?php endforeach; ?>
-        <?php else: ?>
-          <div class="col-span-full rounded-3xl border border-orange-100 bg-white p-6 text-center text-slate-600">
-            No available products found.
-          </div>
-        <?php endif; ?>
+      <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-products-grid data-search-url="<?= htmlspecialchars(url('/'), ENT_QUOTES, 'UTF-8'); ?>">
+        <?php view('partials/products-grid.php', compact('products', 'searchTerm')); ?>
       </div>
     </section>
   </div>
@@ -119,7 +104,6 @@ require __DIR__ . '/layout/user-header.php';
 
 <?php
 $inlineScript = <<<'JS'
-      // Page-specific JS
       (() => {
         const scope = document.querySelector('[data-cart-scope]');
         if (!scope) return;
@@ -133,8 +117,11 @@ $inlineScript = <<<'JS'
         const cartTotalEl = cartRoot.querySelector('[data-cart-total]');
         const notesEl = cartRoot.querySelector('textarea');
         const roomEl = cartRoot.querySelector('select');
+        const searchForm = menuRoot.querySelector('[data-search-form]');
+        const searchInput = searchForm ? searchForm.querySelector('input[name="search"]') : null;
+        const productsGrid = menuRoot.querySelector('[data-products-grid]');
 
-        const products = Array.from(menuRoot.querySelectorAll('[data-product]')).map((card) => ({
+        const getProducts = () => Array.from(menuRoot.querySelectorAll('[data-product]')).map((card) => ({
           id: card.getAttribute('data-id'),
           name: card.getAttribute('data-name'),
           price: parseFloat(card.getAttribute('data-price') || '0'),
@@ -146,6 +133,8 @@ $inlineScript = <<<'JS'
         const SHOULD_CLEAR_STORAGE = %s;
 
         const cart = new Map();
+        let searchTimeout = null;
+        let activeSearchController = null;
 
         const loadCart = () => {
           try {
@@ -193,14 +182,14 @@ $inlineScript = <<<'JS'
           cart.clear();
         }
 
-        if (notesEl) {
+        if (notesEl && !notesEl.value) {
           const savedNote = sessionStorage.getItem(STORAGE_NOTE_KEY);
           if (savedNote !== null) {
             notesEl.value = savedNote;
           }
         }
 
-        if (roomEl) {
+        if (roomEl && !roomEl.value) {
           const savedRoom = sessionStorage.getItem(STORAGE_ROOM_KEY);
           if (savedRoom !== null) {
             roomEl.value = savedRoom;
@@ -213,14 +202,13 @@ $inlineScript = <<<'JS'
 
           if (!cart.size) {
             const empty = document.createElement('p');
-            empty.className = 'text-sm text-slate-500 text-center py-6';
+            empty.className = 'py-6 text-center text-sm text-slate-500';
             empty.textContent = 'No items yet. Select a product.';
             cartItemsEl.appendChild(empty);
           }
 
-          // Header line for clarity
           const header = document.createElement('div');
-          header.className = 'flex items-center justify-between pb-2 border-b border-orange-100 font-semibold';
+          header.className = 'flex items-center justify-between border-b border-orange-100 pb-2 font-semibold';
           header.innerHTML = '<span>Product</span><span>Qty</span><span>Subtotal</span>';
           cartItemsEl.appendChild(header);
 
@@ -239,12 +227,12 @@ $inlineScript = <<<'JS'
               </div>
               <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-sm">
-                  <button class="text-brand-600" data-action="dec" data-id="${item.id}">−</button>
+                  <button class="text-brand-600" data-action="dec" data-id="${item.id}">-</button>
                   <span>${item.qty}</span>
                   <button class="text-brand-600" data-action="inc" data-id="${item.id}">+</button>
                 </div>
                 <span class="font-semibold text-slate-700">${currency(item.price * item.qty)}</span>
-                <button class="text-xs text-red-500" data-action="remove" data-id="${item.id}">✕</button>
+                <button class="text-xs text-red-500" data-action="remove" data-id="${item.id}">x</button>
               </div>
             `;
 
@@ -253,6 +241,50 @@ $inlineScript = <<<'JS'
 
           if (cartTotalEl) {
             cartTotalEl.textContent = currency(total);
+          }
+        };
+
+        const fetchProducts = async (searchTerm, pushState = true) => {
+          if (!productsGrid || !searchForm) return;
+
+          if (activeSearchController) {
+            activeSearchController.abort();
+          }
+
+          activeSearchController = new AbortController();
+
+          const baseUrl = productsGrid.getAttribute('data-search-url') || window.location.pathname;
+          const url = new URL(baseUrl, window.location.origin);
+          if (searchTerm) {
+            url.searchParams.set('search', searchTerm);
+          }
+          url.searchParams.set('partial', 'products');
+
+          try {
+            const response = await fetch(url.toString(), {
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+              },
+              signal: activeSearchController.signal,
+            });
+
+            if (!response.ok) {
+              return;
+            }
+
+            productsGrid.innerHTML = await response.text();
+
+            if (pushState) {
+              const browserUrl = new URL(baseUrl, window.location.origin);
+              if (searchTerm) {
+                browserUrl.searchParams.set('search', searchTerm);
+              }
+              window.history.pushState({ search: searchTerm }, '', browserUrl.toString());
+            }
+          } catch (error) {
+            if (error.name !== 'AbortError') {
+              console.error('Search request failed', error);
+            }
           }
         };
 
@@ -273,6 +305,7 @@ $inlineScript = <<<'JS'
         };
 
         menuRoot.addEventListener('click', (event) => {
+          const products = getProducts();
           const actionBtn = event.target.closest('[data-action="add"]');
           if (actionBtn) {
             const card = actionBtn.closest('[data-product]');
@@ -328,6 +361,26 @@ $inlineScript = <<<'JS'
           roomEl.addEventListener('change', () => {
             roomEl.classList.remove('border-red-500');
             saveRoom();
+          });
+        }
+
+        if (searchForm && searchInput) {
+          searchForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            fetchProducts(searchInput.value.trim());
+          });
+
+          searchInput.addEventListener('input', () => {
+            window.clearTimeout(searchTimeout);
+            searchTimeout = window.setTimeout(() => {
+              fetchProducts(searchInput.value.trim());
+            }, 250);
+          });
+
+          window.addEventListener('popstate', () => {
+            const currentSearch = new URL(window.location.href).searchParams.get('search') || '';
+            searchInput.value = currentSearch;
+            fetchProducts(currentSearch, false);
           });
         }
 
