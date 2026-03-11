@@ -4,18 +4,19 @@ namespace Src\Classes;
 
 use Src\Exceptions\RouteNotFoundException;
 
-class Router{
+class Router
+{
     private static $routes = [];
     private static $middleware = [];
 
-    public static function register($method, $url , $action)
+    public static function register($method, $url, $action)
     {
-        if(! isset(static::$routes[$method][$url])){
+        if (!isset(static::$routes[$method][$url])) {
 
             static::$routes[$method][$url] = [
-                "action" => $action, 
+                "action" => $action,
                 "middleware" => static::$middleware
-                ];
+            ];
         }
     }
 
@@ -45,32 +46,34 @@ class Router{
         $method = $_SERVER['REQUEST_METHOD'];
         $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $basePath = dirname($_SERVER['SCRIPT_NAME']);
-        $url = str_replace($basePath, '', $url);
+        if ($basePath != "/") {
+            $url = str_replace($basePath, '', $url);
+        }
+
         $url = '/' . trim($url, '/');
 
-
-        if(isset(static::$routes[$method][$url])){
+        if (isset(static::$routes[$method][$url])) {
             $route = static::$routes[$method][$url];
             $action = $route['action'];
             $middleware = $route['middleware'];
 
             foreach ($middleware as $m) {
                 [$m, $param] = explode(":", $m);
-                
-                if(! empty($params)){
+
+                if (!empty($params)) {
                     (new $m())->handle($param);
-                }else{
+                } else {
                     (new $m())->handle();
                 }
             }
 
             [$class, $method] = $action;
-            if(class_exists($class) && method_exists($class, $method)){
+            if (class_exists($class) && method_exists($class, $method)) {
                 $class = new $class();
                 return call_user_func_array([$class, $method], []);
             }
 
-        }else{
+        } else {
             throw new RouteNotFoundException();
         }
     }
