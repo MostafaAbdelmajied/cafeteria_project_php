@@ -21,6 +21,12 @@ Router::group(['middleware' => Guest::class], function() {
 Router::group(['middleware' => TypeMiddleware::class . ':user'], function() {
     Router::get("/", [HomeController::class, "index"]);
     Router::get("/user", [UserController::class, "index"]);
+
+//admin routes
+Router::get("/admin", [AdminController::class,"index"]);
+Router::get("/admin/products", [AdminController::class, "adminProducts"]);
+Router::get("/admin/orders", [AdminController::class, "adminOrders"]);
+Router::get("/admin/users", [AdminController::class, "adminUsers"]);
 });
 
 Router::group(['middleware' => TypeMiddleware::class . ':admin'], function() {
