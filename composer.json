@@ -8,5 +8,9 @@
             "bootstrap.php",
             "helpers.php"
         ]
-    }
+    },
+  "require": {
+    "ext-fileinfo": "*",
+    "ext-pdo": "*"
+  }
 }
