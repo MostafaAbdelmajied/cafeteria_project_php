@@ -1,7 +1,7 @@
 <?php
 $activePage = $activePage ?? '';
 $brandSubtitle = 'Admin Console';
-$currentUser = $currentUser ?? 'Admin';
+//$currentUser = $currentUser ?? 'Admin';
 $navigationItems = [
     ['href' => 'admin.php', 'label' => 'Home', 'active' => $activePage === 'home'],
     ['href' => 'admin-products.php', 'label' => 'Products', 'active' => $activePage === 'products'],
