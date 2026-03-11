@@ -2,30 +2,51 @@
 
 namespace Src\Controllers\Home;
 
-use Src\Classes\DB;
+use Src\Models\Category;
+use Src\Models\Product;
+use Src\Models\User;
 
 class HomeController
 {
     public function index()
     {
         $searchTerm = trim((string) ($_GET['search'] ?? ''));
-        $sql = 'SELECT p.*, c.name AS category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.is_available = 1';
-        $params = [];
 
-        if ($searchTerm !== '') {
-            $sql .= ' AND (p.name LIKE ? OR c.name LIKE ?)';
-            $likeTerm = '%' . $searchTerm . '%';
-            $params[] = $likeTerm;
-            $params[] = $likeTerm;
+        // $sql = 'SELECT p.*, c.name AS category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.is_available = 1';
+        $products = Product::query()->where('is_available', 1)->get();
+        $categories = Category::all(['id', 'name']);
+        $users = User::all(['room_no']);
+
+        $categoryNames = [];
+        foreach ($categories as $category) {
+            $categoryNames[(int) $category['id']] = $category['name'];
         }
 
-        $stmt = DB::conn()->prepare($sql);
-        $stmt->execute($params);
-        $products = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        $roomsStmt = DB::conn()->query(
-            "SELECT DISTINCT room_no FROM users WHERE room_no IS NOT NULL AND room_no <> '' ORDER BY room_no"
-        );
-        $rooms = $roomsStmt->fetchAll(\PDO::FETCH_COLUMN);
+        foreach ($products as &$product) {
+            $categoryId = isset($product['category_id']) ? (int) $product['category_id'] : 0;
+            $product['category_name'] = $categoryNames[$categoryId] ?? null;
+        }
+        unset($product);
+
+        if ($searchTerm !== '') {
+            $products = array_values(array_filter($products, function ($product) use ($searchTerm) {
+                $productName = (string) ($product['name'] ?? '');
+                $categoryName = (string) ($product['category_name'] ?? '');
+
+                return stripos($productName, $searchTerm) !== false
+                    || stripos($categoryName, $searchTerm) !== false;
+            }));
+        }
+
+        $rooms = [];
+        foreach ($users as $user) {
+            $roomNo = trim((string) ($user['room_no'] ?? ''));
+            if ($roomNo !== '') {
+                $rooms[$roomNo] = $roomNo;
+            }
+        }
+        ksort($rooms);
+        $rooms = array_values($rooms);
 
         if (isset($_GET['partial']) && $_GET['partial'] === 'products') {
             return view('partials/products-grid.php', compact('products', 'searchTerm'));

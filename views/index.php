@@ -89,9 +89,12 @@ require __DIR__ . '/layout/user-header.php';
           <button type="submit" class="rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold text-white hover:bg-brand-700">
             Go
           </button>
-          <?php if (!empty($searchTerm)): ?>
-            <a href="<?= url('/'); ?>" class="text-xs font-medium text-slate-500 hover:text-brand-600">Clear</a>
-          <?php endif; ?>
+          <button
+            type="button"
+            data-clear-search
+            class="<?= empty($searchTerm) ? 'hidden ' : ''; ?>text-xs font-medium text-slate-500 hover:text-brand-600">
+            Clear
+          </button>
         </form>
       </div>
 
@@ -119,6 +122,7 @@ $inlineScript = <<<'JS'
         const roomEl = cartRoot.querySelector('select');
         const searchForm = menuRoot.querySelector('[data-search-form]');
         const searchInput = searchForm ? searchForm.querySelector('input[name="search"]') : null;
+        const clearSearchBtn = searchForm ? searchForm.querySelector('[data-clear-search]') : null;
         const productsGrid = menuRoot.querySelector('[data-products-grid]');
 
         const getProducts = () => Array.from(menuRoot.querySelectorAll('[data-product]')).map((card) => ({
@@ -281,6 +285,10 @@ $inlineScript = <<<'JS'
               }
               window.history.pushState({ search: searchTerm }, '', browserUrl.toString());
             }
+
+            if (clearSearchBtn) {
+              clearSearchBtn.classList.toggle('hidden', !searchTerm);
+            }
           } catch (error) {
             if (error.name !== 'AbortError') {
               console.error('Search request failed', error);
@@ -382,6 +390,13 @@ $inlineScript = <<<'JS'
             const currentSearch = new URL(window.location.href).searchParams.get('search') || '';
             searchInput.value = currentSearch;
             fetchProducts(currentSearch, false);
+          });
+        }
+
+        if (clearSearchBtn && searchInput) {
+          clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            fetchProducts('', true);
           });
         }
 
