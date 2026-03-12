@@ -3,97 +3,94 @@ $pageTitle = 'Cafeteria | Admin Manual Order';
 require __DIR__ . '/layout/header.php';
 $activePage = 'manual-order';
 require __DIR__ . '/layout/admin-header.php';
+
+
 ?>
 
-    <main class="mx-auto w-full max-w-6xl px-6 py-10">
-      <div class="grid gap-8 lg:grid-cols-[1.05fr_1.6fr]" data-cart-scope>
-        <section class="rounded-3xl bg-white/90 p-6 shadow-lg shadow-orange-100" data-cart>
-          <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold">Manual Order</h2>
-            <span class="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-brand-700">Room Selection</span>
-          </div>
-
-          <form id="manual-order-form" class="mt-6 space-y-4" data-validate-form data-require-cart>
-            <div class="space-y-4" data-cart-items></div>
-
-            <div>
-              <label class="text-sm font-semibold text-slate-700">Notes</label>
-              <textarea class="mt-2 w-full rounded-2xl border border-orange-100 bg-white/70 p-3 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-orange-100" rows="3" placeholder="e.g. Extra sugar"></textarea>
-            </div>
-
-            <div data-field>
-              <label class="text-sm font-semibold text-slate-700">Room</label>
-              <select required class="mt-2 w-full rounded-2xl border border-orange-100 bg-white/70 p-3 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-orange-100">
-                <option value="">Select a room</option>
-                <option>2010</option>
-                <option>2011</option>
-                <option>3010</option>
-              </select>
-              <p class="mt-1 hidden text-xs text-red-600" data-error></p>
-            </div>
-
-            <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-xs text-red-600 hidden" data-form-alert>
-              Please fix the highlighted fields.
-            </div>
-
-            <div class="mt-2 flex items-center justify-between border-t border-orange-100 pt-4 text-base font-semibold">
-              <span>Total</span>
-              <span class="text-brand-700" data-cart-total>EGP 0</span>
-            </div>
-
-            <button class="mt-2 w-full rounded-2xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-brand-700" type="submit">
-              Confirm
-            </button>
-          </form>
-        </section>
-
-        <section data-menu>
-          <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">Assign order</p>
-              <h2 class="text-2xl font-semibold">Add to a user</h2>
-            </div>
-            <div class="rounded-2xl border border-orange-100 bg-white/80 px-4 py-2 text-sm">
-              <label class="text-xs font-semibold text-slate-600">User</label>
-              <select required form="manual-order-form" class="mt-1 block rounded-xl border border-orange-100 px-3 py-2 text-sm focus:border-brand-300 focus:outline-none">
-                <option value="">Select user</option>
-                <option>Islam Askar</option>
-                <option>Abdulrahman Hamdy</option>
-                <option>Sayed Fathy</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="mt-6 flex items-center gap-2 rounded-full border border-orange-100 bg-white px-4 py-2 text-sm">
-            <span>🔍</span>
-            <input class="w-48 bg-transparent text-sm focus:outline-none" placeholder="Search products..." />
-          </div>
-
-          <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div class="rounded-3xl border border-orange-100 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg" data-product data-id="1" data-name="Tea" data-price="5" data-icon="🍵">
-              <div class="text-3xl">🍵</div>
-              <p class="mt-3 font-semibold">Tea</p>
-              <p class="text-sm text-slate-500">5 LE</p>
-            </div>
-            <div class="rounded-3xl border border-orange-100 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg" data-product data-id="2" data-name="Coffee" data-price="6" data-icon="☕">
-              <div class="text-3xl">☕</div>
-              <p class="mt-3 font-semibold">Coffee</p>
-              <p class="text-sm text-slate-500">6 LE</p>
-            </div>
-            <div class="rounded-3xl border border-orange-100 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg" data-product data-id="3" data-name="Cola" data-price="10" data-icon="🥤">
-              <div class="text-3xl">🥤</div>
-              <p class="mt-3 font-semibold">Cola</p>
-              <p class="text-sm text-slate-500">10 LE</p>
-            </div>
-            <div class="rounded-3xl border border-orange-100 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg" data-product data-id="4" data-name="Juice" data-price="12" data-icon="🧃">
-              <div class="text-3xl">🧃</div>
-              <p class="mt-3 font-semibold">Juice</p>
-              <p class="text-sm text-slate-500">12 LE</p>
-            </div>
-          </div>
-        </section>
+<main class="mx-auto w-full max-w-6xl px-6 py-10">
+  <div class="grid gap-8 lg:grid-cols-[1.05fr_1.6fr]" data-cart-scope>
+    <section class="rounded-3xl bg-white/90 p-6 shadow-lg shadow-orange-100" data-cart>
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold">Manual Order</h2>
+        <span class="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-brand-700">Room Selection</span>
       </div>
-    </main>
+
+      <form id="manual-order-form" method="post" action="<?= url('/admin/manual-order/submit') ?>"
+        class="mt-6 space-y-4" data-validate-form data-require-cart>
+        <input type="hidden" name="cart_data" id="cart_data" value="" />
+        <div class="space-y-4" data-cart-items></div>
+
+        <div>
+          <label class="text-sm font-semibold text-slate-700">Notes</label>
+          <textarea
+            class="mt-2 w-full rounded-2xl border border-orange-100 bg-white/70 p-3 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-orange-100"
+            rows="3" placeholder="e.g. Extra sugar"></textarea>
+        </div>
+
+        <div data-field>
+          <label class="text-sm font-semibold text-slate-700">Room</label>
+          <select name="room" required
+            class="mt-2 w-full rounded-2xl border border-orange-100 bg-white/70 p-3 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-orange-100">
+            <option value="">Select a room</option>
+            <?php foreach ($rooms as $room): ?>
+              <option value="<?= htmlspecialchars((string) $room, ENT_QUOTES, 'UTF-8') ?>">
+                <?= htmlspecialchars((string) $room, ENT_QUOTES, 'UTF-8') ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+          <p class="mt-1 hidden text-xs text-red-600" data-error></p>
+        </div>
+
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-xs text-red-600 hidden" data-form-alert>
+          Please fix the highlighted fields.
+        </div>
+
+        <div class="mt-2 flex items-center justify-between border-t border-orange-100 pt-4 text-base font-semibold">
+          <span>Total</span>
+          <span class="text-brand-700" data-cart-total>EGP 0</span>
+        </div>
+
+        <button
+          class="mt-2 w-full rounded-2xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-brand-700"
+          type="submit">
+          Confirm
+        </button>
+      </form>
+    </section>
+
+    <section data-menu>
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">Assign order</p>
+          <h2 class="text-2xl font-semibold">Add to a user</h2>
+        </div>
+        <div class="rounded-2xl border border-orange-100 bg-white/80 px-4 py-2 text-sm">
+          <label class="text-xs font-semibold text-slate-600">User</label>
+          <select name="user_id" required form="manual-order-form"
+            class="mt-1 block rounded-xl border border-orange-100 px-3 py-2 text-sm focus:border-brand-300 focus:outline-none">
+            <option value="">Select user</option>
+            <?php foreach ($users as $user): ?>
+              <option value="<?= htmlspecialchars($user['id'], ENT_QUOTES, 'UTF-8') ?>">
+                <?= htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8') ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-6 flex items-center gap-2 rounded-full border border-orange-100 bg-white px-4 py-2 text-sm">
+        <span>🔍</span>
+        <input class="w-48 bg-transparent text-sm focus:outline-none" placeholder="Search products..." />
+      </div>
+
+      <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <?php 
+          require __DIR__ . '/partials/products-grid.php'; 
+        ?>
+      </div>
+    </section>
+  </div>
+</main>
 
 <?php
 $inlineScript = <<<'JS'
@@ -211,6 +208,45 @@ $inlineScript = <<<'JS'
 
         if (roomEl) {
           roomEl.addEventListener('change', () => roomEl.classList.remove('border-red-500'));
+        }
+
+        const orderForm = document.getElementById('manual-order-form');
+        if (orderForm) {
+          orderForm.addEventListener('submit', (event) => {
+            if (!cart.size) {
+              event.preventDefault();
+              alert('Your cart is empty. Add products first.');
+              return;
+            }
+
+            const payload = {
+              items: Array.from(cart.values()),
+              note: notesEl ? notesEl.value.trim() : '',
+              room: roomEl ? roomEl.value : '',
+              total: Array.from(cart.values()).reduce((sum, item) => sum + item.price * item.qty, 0),
+            };
+            const hiddenInput = document.getElementById('cart_data');
+            if (hiddenInput) {
+              hiddenInput.value = JSON.stringify(payload);
+            }
+          });
+        }
+
+        const searchInput = menuRoot.querySelector('input[placeholder="Search products..."]');
+        if (searchInput) {
+          searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            const productCards = menuRoot.querySelectorAll('[data-product]');
+            
+            productCards.forEach(card => {
+              const name = card.getAttribute('data-name').toLowerCase();
+              if (name.includes(term)) {
+                card.classList.remove('hidden');
+              } else {
+                card.classList.add('hidden');
+              }
+            });
+          });
         }
 
         renderCart();

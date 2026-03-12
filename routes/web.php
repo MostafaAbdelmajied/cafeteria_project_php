@@ -9,6 +9,7 @@ use Src\Controllers\PasswordResetController;
 use Src\Controllers\UserController;
 use Src\Middleware\Guest;
 use Src\Middleware\TypeMiddleware;
+use Src\Controllers\AdminOrderController;
 
 Router::group(['middleware' => Guest::class], function () {
     Router::get("/login", [AuthController::class, "showLogin"]);
@@ -35,6 +36,8 @@ Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
     Router::get("/admin/products", [AdminController::class, "adminProducts"]);
     Router::get("/admin/orders", [AdminController::class, "adminOrders"]);
     Router::get("/admin/users", [AdminController::class, "adminUsers"]);
+    Router::get("/admin-manual-order", [AdminOrderController::class, "showManualOrder"]);
+
 });
 
 Router::get("/logout", [AuthController::class, "logout"]);
