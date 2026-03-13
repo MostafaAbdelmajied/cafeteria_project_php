@@ -49,8 +49,7 @@ require __DIR__ . '/layout/admin-header.php';
     </div>
     <?php
     require_once "views/layout/paginator.php"
-    ?>
-    ?>
+    ?>ء
 </main>
 
 <?php

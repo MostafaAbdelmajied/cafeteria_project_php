@@ -32,9 +32,15 @@ Router::group(['middleware' => TypeMiddleware::class . ':user'], function () {
 Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
     //admin routes
     Router::get("/admin", [AdminController::class, "index"]);
-    Router::get("/admin/products", [AdminController::class, "adminProducts"]);
-    Router::get("/admin/orders", [AdminController::class, "adminOrders"]);
-    Router::get("/admin/users", [AdminController::class, "adminUsers"]);
+    Router::get("/admin/products", [AdminController::class, "products"]);
+    Router::get("/admin/orders", [AdminController::class, "orders"]);
+    Router::get("/admin/users", [AdminController::class, "users"]);
+    Router::get("/admin/products/create", [AdminController::class, "createProduct"]);
+    Router::post("/admin/products/store", [AdminController::class, "storeProduct"]);
+    Router::post("/admin/products/delete", [AdminController::class, "destroyProduct"]);
+    Router::post("/admin/products/edit", [AdminController::class, "editProduct"]);
+    Router::post("/admin/products/update", [AdminController::class, "updateProduct"]);
+    Router::post("/admin/products/toggle-available", [AdminController::class, "toggleProductAvailability"]);
 });
 
 Router::get("/logout", [AuthController::class, "logout"]);

@@ -11,7 +11,8 @@ require __DIR__ . '/layout/admin-header.php';
             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">Catalog</p>
             <h1 class="text-2xl font-semibold">All Products</h1>
         </div>
-        <a href="admin-add-product.php" class="rounded-full bg-brand-600 px-4 py-2 text-xs font-semibold text-white">Add
+        <a href="<?= url('/admin/products/create') ?>"
+           class="rounded-full bg-brand-600 px-4 py-2 text-xs font-semibold text-white">Add
             Product</a>
     </div>
 
@@ -30,16 +31,48 @@ require __DIR__ . '/layout/admin-header.php';
                 <tr>
                     <td class="px-6 py-4"><?= $product["name"] ?></td>
                     <td class="px-6 py-4"><?= $product["price"] ?> EGP</td>
-                    <td class="px-6 py-4 text-lg"><?= $product["product_picture"] ?></td>
+                    <td class="px-6 py-4">
+                        <?php if (!empty($product['product_picture'])): ?>
+                            <img src="<?= url('/' . $product['product_picture']) ?>" alt="<?= $product['name'] ?>"
+                                 class="h-10 w-10 rounded-lg object-cover">
+                        <?php else: ?>
+                            <span class="text-xs text-slate-400 italic">No image</span>
+                        <?php endif; ?>
+                    </td>
                     <td class="px-6 py-4">
                         <div class="flex flex-wrap items-center gap-2">
-                            <button class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-                                available
+                            <form class="inline"
+                                  action="<?= url("/admin/products/toggle-available") ?>" method="post">
+                                <input hidden name="id" value="<?= $product["id"] ?>">
+                                <input hidden name="page" value="<?= $currentPage ?? 1 ?>">
+                                <?php if ($product["is_available"] == 1) : ?>
+                                    <button
+                                            type="submit"
+                                            class="rounded-full border border-transparent bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 transition-all hover:border-emerald-600 hover:bg-transparent">
+                                        available
+                                    </button>
+                                <?php else : ?>
+                                    <button
+                                            type="submit"
+                                            class="rounded-full border border-transparent bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500 transition-all hover:border-slate-400 hover:bg-transparent">
+                                        not available
+                                    </button>
+                                <?php endif; ?>
+                            </form>
+                            <button class="rounded-full border border-orange-200 px-3 py-1 text-xs font-semibold text-orange-600 transition-all hover:bg-orange-500 hover:text-white">
+                                edit
                             </button>
-                            <button class="rounded-full border border-orange-200 px-3 py-1 text-xs">edit</button>
-                            <button class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">
-                                delete
-                            </button>
+                            <form action="<?= url("/admin/products/delete") ?>" method="post"
+                                  style="display: inline"
+                                  onsubmit="return confirm('Are you sure you want to delete this product?');"
+                            >
+                                <input type="hidden" name="id" value="<?= $product["id"] ?>">
+                                <button
+                                        type="submit"
+                                        class="rounded-full border border-transparent bg-red-100 px-3 py-1 text-xs font-semibold text-red-600 transition-all hover:border-red-600 hover:bg-transparent">
+                                    delete
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>
