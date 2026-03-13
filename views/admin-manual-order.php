@@ -15,6 +15,20 @@ require __DIR__ . '/layout/admin-header.php';
         <span class="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-brand-700">Room Selection</span>
       </div>
 
+      <?php if (isset($_SESSION['admin_order_error'])): ?>
+        <div class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+          <?= htmlspecialchars($_SESSION['admin_order_error'], ENT_QUOTES, 'UTF-8') ?>
+        </div>
+        <?php unset($_SESSION['admin_order_error']); ?>
+      <?php endif; ?>
+
+      <?php if (isset($_SESSION['admin_order_success'])): ?>
+        <div class="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
+          <?= htmlspecialchars($_SESSION['admin_order_success'], ENT_QUOTES, 'UTF-8') ?>
+        </div>
+        <?php unset($_SESSION['admin_order_success']); ?>
+      <?php endif; ?>
+
       <form id="manual-order-form" method="post" action="<?= url('/admin/manual-order/submit') ?>"
         class="mt-6 space-y-4" data-validate-form data-require-cart>
         <input type="hidden" name="cart_data" id="cart_data" value="" />
