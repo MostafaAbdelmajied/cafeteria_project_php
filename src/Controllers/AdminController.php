@@ -63,7 +63,9 @@ class AdminController
     {
         $activePage = 'products';
         $categories = Category::all();
-        return view("admin-add-product.php", compact("activePage", "categories"));
+        $product = null;
+
+        return view("admin-add-product.php", compact("activePage", "categories", "product"));
     }
 
 
@@ -72,26 +74,7 @@ class AdminController
         $name = trim($_POST['name'] ?? '');
         $price = (float)($_POST['price'] ?? 0);
         $category_id = (int)($_POST['category_id'] ?? 0);
-        $product_picture = '';
-
-        if (!empty($_FILES['product_image']['name'])) {
-            $image = $_FILES['product_image'];
-
-            if (($image['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK && is_uploaded_file($image['tmp_name'])) {
-                $extension = strtolower(pathinfo($image['name'], PATHINFO_EXTENSION));
-                $safeName = bin2hex(random_bytes(8));
-                $imageName = $safeName . ($extension !== '' ? '.' . $extension : '');
-                $targetPath = self::PRODUCT_IMAGES_DIRECTORY . $imageName;
-
-                if (!is_dir(self::PRODUCT_IMAGES_DIRECTORY)) {
-                    mkdir(self::PRODUCT_IMAGES_DIRECTORY, 0775, true);
-                }
-
-                if (move_uploaded_file($image['tmp_name'], $targetPath)) {
-                    $product_picture = self::PRODUCT_IMAGES_PUBLIC_PATH . $imageName;
-                }
-            }
-        }
+        $product_picture = $this->storeUploadedProductImage();
 
         $productData = [
             'name' => $name,
@@ -110,13 +93,10 @@ class AdminController
         $productId = $_POST["id"];
 
         $product = Product::find($productId);
-        $productPicture = $product["product_picture"];
-        if ($product && !empty($productPicture)) {
-            $absolutePath = __DIR__ . '/../../' . $product["product_picture"];
-            if (file_exists($absolutePath)) {
-                unlink($absolutePath);
-            }
+        if ($product) {
+            $this->deleteProductImage($product["product_picture"] ?? '');
         }
+
         Product::delete($productId);
         return redirect(url('/admin/products'));
     }
@@ -139,12 +119,86 @@ class AdminController
 
     public function editProduct()
     {
+        $productId = (int)($_GET["id"] ?? 0);
+        $product = Product::find($productId);
 
+        if (!$product) {
+            redirect(url('/admin/products'));
+        }
+
+        $activePage = 'products';
+        $categories = Category::all();
+
+        return view("admin-edit-product.php", compact("activePage", "categories", "product"));
     }
 
     public function updateProduct()
     {
+        $productId = (int)($_POST["id"] ?? 0);
+        $product = Product::find($productId);
 
+        if (!$product) {
+            redirect(url('/admin/products'));
+        }
+
+        $newPicture = $this->storeUploadedProductImage();
+        $productPicture = $product['product_picture'] ?? '';
+
+        if ($newPicture !== '') {
+            $this->deleteProductImage($productPicture);
+            $productPicture = $newPicture;
+        }
+
+        $updatedData = [
+            "name" => trim($_POST['name'] ?? ''),
+            "price" => (float)($_POST["price"] ?? 0),
+            "product_picture" => $productPicture,
+            "is_available" => (int)($product["is_available"] ?? 1),
+            "category_id" => (int)($_POST["category_id"] ?? 0),
+        ];
+
+        Product::update($productId, $updatedData);
+        redirect(url("/admin/products"));
+    }
+
+    private function storeUploadedProductImage(): string
+    {
+        if (empty($_FILES['product_image']['name'])) {
+            return '';
+        }
+
+        $image = $_FILES['product_image'];
+
+        if (($image['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file($image['tmp_name'])) {
+            return '';
+        }
+
+        $extension = strtolower(pathinfo($image['name'], PATHINFO_EXTENSION));
+        $safeName = bin2hex(random_bytes(8));
+        $imageName = $safeName . ($extension !== '' ? '.' . $extension : '');
+        $targetPath = self::PRODUCT_IMAGES_DIRECTORY . $imageName;
+
+        if (!is_dir(self::PRODUCT_IMAGES_DIRECTORY)) {
+            mkdir(self::PRODUCT_IMAGES_DIRECTORY, 0775, true);
+        }
+
+        if (move_uploaded_file($image['tmp_name'], $targetPath)) {
+            return self::PRODUCT_IMAGES_PUBLIC_PATH . $imageName;
+        }
+
+        return '';
+    }
+
+    private function deleteProductImage(string $productPicture): void
+    {
+        if ($productPicture === '') {
+            return;
+        }
+
+        $absolutePath = __DIR__ . '/../../' . $productPicture;
+        if (file_exists($absolutePath)) {
+            unlink($absolutePath);
+        }
     }
 
     /**

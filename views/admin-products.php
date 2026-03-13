@@ -59,9 +59,10 @@ require __DIR__ . '/layout/admin-header.php';
                                     </button>
                                 <?php endif; ?>
                             </form>
-                            <button class="rounded-full border border-orange-200 px-3 py-1 text-xs font-semibold text-orange-600 transition-all hover:bg-orange-500 hover:text-white">
+                            <a href="<?= url('/admin/products/edit?id=' . $product['id']) ?>"
+                               class="rounded-full border border-orange-200 px-3 py-1 text-xs font-semibold text-orange-600 transition-all hover:bg-orange-500 hover:text-white">
                                 edit
-                            </button>
+                            </a>
                             <form action="<?= url("/admin/products/delete") ?>" method="post"
                                   style="display: inline"
                                   onsubmit="return confirm('Are you sure you want to delete this product?');"

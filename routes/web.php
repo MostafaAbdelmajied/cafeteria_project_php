@@ -38,7 +38,7 @@ Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
     Router::get("/admin/products/create", [AdminController::class, "createProduct"]);
     Router::post("/admin/products/store", [AdminController::class, "storeProduct"]);
     Router::post("/admin/products/delete", [AdminController::class, "destroyProduct"]);
-    Router::post("/admin/products/edit", [AdminController::class, "editProduct"]);
+    Router::get("/admin/products/edit", [AdminController::class, "editProduct"]);
     Router::post("/admin/products/update", [AdminController::class, "updateProduct"]);
     Router::post("/admin/products/toggle-available", [AdminController::class, "toggleProductAvailability"]);
 });
