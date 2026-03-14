@@ -11,32 +11,38 @@ abstract class Model
 
     protected $condition = "";
     protected $parameters = [];
+    protected $limit = "";
+    protected $offset = "";
+    protected $joins = [];
+    protected $orderBy = "";
 
-    public static function query()
+    public static function query(): Model
     {
         return new static();
     }
-    public static function all(array $columns = ["*"])
+
+    public static function all(array $columns = ["*"]): array
     {
         $table = static::$table;
         $columns = implode(", ", $columns);
-        $stmt =  DB::conn()->query("SELECT $columns from $table");
+        $stmt = DB::conn()->query("SELECT $columns FROM $table");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function find($id ,array $columns = ["*"])
+    public static function find($id, array $columns = ["*"])
     {
         $table = static::$table;
         $columns = implode(", ", $columns);
-        $stmt = DB::conn()->query("SELECT $columns from $table WHERE id = $id");
+        $stmt = DB::conn()->prepare("SELECT $columns FROM $table WHERE id = ?");
+        $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function where($column, $value)
+    public function where($column, $value): Model
     {
         if ($this->condition != "") {
             $this->condition .= " AND $column = ?";
-        }else{
+        } else {
             $this->condition .= "$column = ?";
         }
         $this->parameters[] = $value;
@@ -44,40 +50,74 @@ abstract class Model
         return $this;
     }
 
-    public function orWhere($column, $value)
+    public function orWhere($column, $value): Model
     {
         if ($this->condition != "") {
             $this->condition .= " OR $column = ?";
             $this->parameters[] = $value;
             return $this;
-        }else{
+        } else {
             return $this->where($column, $value);
         }
     }
 
-    public function whereIn($column, array $values)
+    public function whereIn($column, array $values): Model
     {
         $placeholders = implode(", ", array_fill(0, count($values), "?"));
 
-        $this->condition = "$column IN ($placeholders)";
+        if ($this->condition != "") {
+            $this->condition .= " AND $column IN ($placeholders)";
+        } else {
+            $this->condition .= "$column IN ($placeholders)";
+        }
 
         $this->parameters = array_merge($this->parameters, $values);
 
         return $this;
     }
 
-    public function get(array $columns = ["*"])
+    public function join($table, $condition, $type = 'INNER'): Model
+    {
+        $this->joins[] = "$type JOIN $table ON $condition";
+        return $this;
+    }
+
+    public function orderBy($column, $direction = 'ASC'): Model
+    {
+        $this->orderBy = " ORDER BY $column $direction";
+        return $this;
+    }
+
+    public function get(array $columns = ["*"]): array
     {
         $table = static::$table;
+        // If an alias isn't provided directly, we can just use the table name.
+        // But if the class name includes an alias (which we won't do), we handle it in query string.
         $columns = implode(", ", $columns);
 
-        $where = "";
+        $query = "SELECT $columns FROM $table";
+
+        if (!empty($this->joins)) {
+            $query .= " " . implode(" ", $this->joins);
+        }
+        
         if ($this->condition != "") {
-            $where = "where " . $this->condition;
+            $query .= " WHERE " . $this->condition;
         }
 
-        $stmt = DB::conn()->prepare("SELECT $columns FROM $table $where");
+        if ($this->orderBy !== "") {
+            $query .= $this->orderBy;
+        }
         
+        if ($this->limit != "") {
+            $query .= $this->limit;
+        }
+        
+        if ($this->offset != "") {
+            $query .= $this->offset;
+        }
+
+        $stmt = DB::conn()->prepare($query);
         $stmt->execute($this->parameters);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -90,35 +130,42 @@ abstract class Model
 
         $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
         $stmt = DB::conn()->prepare($sql);
-        
-        if($stmt->execute(array_values($data))){
+
+        if ($stmt->execute(array_values($data))) {
             $id = DB::conn()->lastInsertId();
             return static::find($id);
-        };
+        }
         return false;
     }
 
-    public static function createMany(array $data)
+    public static function createMany(array $data): bool
     {
         $table = static::$table;
         $columns = implode(", ", array_keys($data[0]));
         $placeholders = implode(", ", array_fill(0, count($data[0]), "?"));
 
         $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
-        $stmt = DB::conn()->prepare($sql);
+        
+        try {
+            $pdo = DB::conn();
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare($sql);
 
-        DB::conn()->beginTransaction();
+            foreach ($data as $row) {
+                $stmt->execute(array_values($row));
+            }
 
-        foreach ($data as $key => $row) {
-            $stmt->execute(array_values($row));
+            $pdo->commit();
+            return true;
+        } catch (\Exception $e) {
+            if (isset($pdo)) {
+                $pdo->rollBack();
+            }
+            return false;
         }
-
-        DB::conn()->commit();
-
-        return true;
     }
 
-    public static function update($id, array $data)
+    public static function update($id, array $data): bool
     {
         $table = static::$table;
         $parameters = [];
@@ -126,7 +173,7 @@ abstract class Model
         $sql = "UPDATE $table SET ";
         $i = 0;
         foreach ($data as $column => $value) {
-            if($i == 0) {
+            if ($i == 0) {
                 $sql .= "$column = ?";
             } else {
                 $sql .= ", $column = ?";
@@ -144,12 +191,39 @@ abstract class Model
         return true;
     }
 
-    public static function delete($id, $column = "id")
+    public static function delete($id, $column = "id"): bool
     {
         $table = static::$table;
         $sql = "DELETE FROM $table where $column = ?";
         $stmt = DB::conn()->prepare($sql);
         $stmt->execute([$id]);
         return true;
+    }
+
+    public function count(): int
+    {
+
+        $table = static::$table;
+
+        $where = "";
+        if ($this->condition !== "") {
+            $where = "Where " . $this->condition;
+        }
+        $stmt = DB::conn()->prepare("SELECT COUNT(*) FROM $table $where");
+        $stmt->execute($this->parameters);
+
+        return (int)$stmt->fetchColumn();
+    }
+
+    public function limit(int $count): Model
+    {
+        $this->limit = " LIMIT $count";
+        return $this;
+    }
+
+    public function offset(int $count): Model
+    {
+        $this->offset = " OFFSET $count";
+        return $this;
     }
 }
