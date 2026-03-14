@@ -13,6 +13,8 @@ abstract class Model
     protected $parameters = [];
     protected $limit = "";
     protected $offset = "";
+    protected $joins = [];
+    protected $orderBy = "";
 
     public static function query(): Model
     {
@@ -74,15 +76,37 @@ abstract class Model
         return $this;
     }
 
+    public function join($table, $condition, $type = 'INNER'): Model
+    {
+        $this->joins[] = "$type JOIN $table ON $condition";
+        return $this;
+    }
+
+    public function orderBy($column, $direction = 'ASC'): Model
+    {
+        $this->orderBy = " ORDER BY $column $direction";
+        return $this;
+    }
+
     public function get(array $columns = ["*"]): array
     {
         $table = static::$table;
+        // If an alias isn't provided directly, we can just use the table name.
+        // But if the class name includes an alias (which we won't do), we handle it in query string.
         $columns = implode(", ", $columns);
 
         $query = "SELECT $columns FROM $table";
+
+        if (!empty($this->joins)) {
+            $query .= " " . implode(" ", $this->joins);
+        }
         
         if ($this->condition != "") {
             $query .= " WHERE " . $this->condition;
+        }
+
+        if ($this->orderBy !== "") {
+            $query .= $this->orderBy;
         }
         
         if ($this->limit != "") {

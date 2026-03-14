@@ -187,4 +187,32 @@ class AdminOrderController
         $_SESSION['admin_order_success'] = 'Order successfully created for ' . htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8') . '.';
         redirect(url('/admin-manual-order'));
     }
+
+    public function markAsDelivered()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect(url('/admin/orders'));
+            return;
+        }
+
+        $orderId = trim((string) ($_POST['order_id'] ?? ''));
+
+        if ($orderId === '') {
+            $_SESSION['admin_order_error'] = 'Invalid order ID.';
+            redirect(url('/admin/orders'));
+            return;
+        }
+
+        $order = OrderModel::find($orderId);
+        if (!$order) {
+            $_SESSION['admin_order_error'] = 'Order not found.';
+            redirect(url('/admin/orders'));
+            return;
+        }
+
+        OrderModel::update($orderId, ['status' => 'Done']);
+        
+        $_SESSION['admin_order_success'] = 'Order marked as delivered successfully!';
+        redirect(url('/admin/orders'));
+    }
 }

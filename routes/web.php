@@ -38,6 +38,7 @@ Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
     Router::get("/admin/users", [AdminController::class, "adminUsers"]);
     Router::get("/admin-manual-order", [AdminOrderController::class, "showManualOrder"]);
     Router::post("/admin/manual-order/submit", [AdminOrderController::class, "submitManualOrder"]);
+    Router::post("/admin/orders/deliver", [AdminOrderController::class, "markAsDelivered"]);
 
 });
 
