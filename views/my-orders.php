@@ -46,7 +46,7 @@ $flash = getFlash();
     <!--Form for filtering orders by date range, with input fields for "from" and "to" dates,
          and a submit button to apply the filter. If a date filter is applied, a "Clear" button is
          also displayed to allow the user to reset the filter and view all orders again.-->
-    <form method="GET" action="<? BASE_PATH ?>/my-orders" class="flex flex-wrap items-end gap-3">
+    <form method="GET" action="<?= BASE_PATH ?>/my-orders" class="flex flex-wrap items-end gap-3">
       <div class="flex flex-col gap-1"></div>
       <label class="text-xs font-medium text-slate-500">From</label>
       <input type="date" name="from" value="<?= htmlspecialchars($fromDate) ?>"
