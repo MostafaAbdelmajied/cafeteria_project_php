@@ -1,4 +1,5 @@
 <?php
+if (!defined("BASE_PATH")) { header("Location: /"); exit; }
 $pageTitle = $pageTitle ?? 'Cafeteria';
 $bodyClass = $bodyClass ?? "min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-100 font-['Sora',sans-serif] text-slate-900";
 ?>

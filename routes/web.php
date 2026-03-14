@@ -1,40 +1,58 @@
 <?php
 
 use Src\Classes\Router;
-use Src\Controllers\AdminController;
 use Src\Controllers\AuthController;
-use Src\Controllers\Home\HomeController;
+use Src\Controllers\HomeController;
 use Src\Controllers\OrderController;
-use Src\Controllers\PasswordResetController;
+use Src\Controllers\ProductController;
 use Src\Controllers\UserController;
-use Src\Middleware\Guest;
-use Src\Middleware\TypeMiddleware;
+use Src\Controllers\AdminOrderController;
+use Src\Controllers\CheckController;
+use Src\Middleware\AuthMiddleware;
+use Src\Middleware\AdminMiddleware;
 
-Router::group(['middleware' => Guest::class], function () {
-    Router::get("/login", [AuthController::class, "showLogin"]);
-    Router::post("/login", [AuthController::class, "login"]);
-    Router::get("/forgot-password", [PasswordResetController::class, "showForgotPassword"]);
-    Router::post("/forgot-password", [PasswordResetController::class, "sendResetLink"]);
-    Router::get("/reset-password", [PasswordResetController::class, "showResetPassword"]);
-    Router::post("/reset-password", [PasswordResetController::class, "resetPassword"]);
+// ── Guest ─────────────────────────────────────────────────────────────────────
+Router::get('/',       [AuthController::class, 'showLogin']);
+Router::get('/login',  [AuthController::class, 'showLogin']);
+Router::post('/login', [AuthController::class, 'login']);
+Router::get('/logout', [AuthController::class, 'logout']);
+
+// ── Authenticated users ───────────────────────────────────────────────────────
+Router::group(['middleware' => [AuthMiddleware::class]], function () {
+
+    Router::get('/home',          [HomeController::class,  'index']);
+
+    // ── Order responsibilities (Islam) ────────────────────────────────────────
+    Router::get('/my-orders',     [OrderController::class, 'myOrders']);
+    Router::get('/order-details', [OrderController::class, 'orderDetails']);
+    Router::post('/order/place',  [OrderController::class, 'placeOrder']);
+    Router::post('/order/cancel', [OrderController::class, 'cancelOrder']);
 });
 
-Router::group(['middleware' => TypeMiddleware::class . ':user'], function () {
-    Router::get("/", [HomeController::class, "index"]);
-    Router::get("/user", [UserController::class, "index"]);
-    Router::get("/order-confirm", [OrderController::class, "confirm"]);
-    Router::post("/order-confirm", [OrderController::class, "confirm"]);
-    Router::post("/order-cancel", [OrderController::class, "cancel"]);
-    Router::post("/order-submit", [OrderController::class, "submit"]);
+// ── Admin ─────────────────────────────────────────────────────────────────────
+Router::group(['middleware' => [AdminMiddleware::class]], function () {
 
+    Router::get('/admin',                 [AdminOrderController::class, 'orders']);
+    Router::get('/admin/orders',          [AdminOrderController::class, 'orders']);
+    Router::post('/admin/orders/deliver', [AdminOrderController::class, 'deliver']);
+
+    Router::get('/admin/manual-order',    [AdminOrderController::class, 'manualOrder']);
+    Router::post('/admin/manual-order',   [AdminOrderController::class, 'placeManualOrder']);
+
+    Router::get('/admin/products',        [ProductController::class, 'index']);
+    Router::get('/admin/add-product',     [ProductController::class, 'create']);
+    Router::post('/admin/add-product',    [ProductController::class, 'store']);
+    Router::get('/admin/edit-product',    [ProductController::class, 'edit']);
+    Router::post('/admin/edit-product',   [ProductController::class, 'update']);
+    Router::post('/admin/toggle-product', [ProductController::class, 'toggle']);
+    Router::post('/admin/delete-product', [ProductController::class, 'delete']);
+
+    Router::get('/admin/users',           [UserController::class, 'index']);
+    Router::get('/admin/add-user',        [UserController::class, 'create']);
+    Router::post('/admin/add-user',       [UserController::class, 'store']);
+    Router::get('/admin/edit-user',       [UserController::class, 'edit']);
+    Router::post('/admin/edit-user',      [UserController::class, 'update']);
+    Router::post('/admin/delete-user',    [UserController::class, 'delete']);
+
+    Router::get('/admin/checks',          [CheckController::class, 'index']);
 });
-
-Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
-    //admin routes
-    Router::get("/admin", [AdminController::class, "index"]);
-    Router::get("/admin/products", [AdminController::class, "adminProducts"]);
-    Router::get("/admin/orders", [AdminController::class, "adminOrders"]);
-    Router::get("/admin/users", [AdminController::class, "adminUsers"]);
-});
-
-Router::get("/logout", [AuthController::class, "logout"]);

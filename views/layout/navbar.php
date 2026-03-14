@@ -1,9 +1,7 @@
 <?php
-
-use Src\Classes\Auth;
-
+if (!defined("BASE_PATH")) { header("Location: /"); exit; }
 $brandSubtitle = $brandSubtitle ?? 'Order Management';
-$currentUser = $currentUser ?? Auth::user()['name'] ?? null;
+$currentUser = $currentUser ?? null;
 $navigationItems = $navigationItems ?? [];
 $headerContainerClass = $headerContainerClass ?? 'mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4';
 ?>
@@ -27,10 +25,6 @@ $headerContainerClass = $headerContainerClass ?? 'mx-auto flex w-full max-w-6xl 
       <div class="flex items-center gap-3 text-sm">
         <span class="flex h-9 w-9 items-center justify-center rounded-full bg-orange-100">👤</span>
         <span class="font-medium"><?= htmlspecialchars($currentUser, ENT_QUOTES, 'UTF-8') ?></span>
-
-        <a href="<?= url('/logout') ?>" class="ml-4 rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700 transition hover:bg-orange-200">
-          Logout
-        </a>
       </div>
     <?php endif; ?>
   </div>
