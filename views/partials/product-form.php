@@ -32,10 +32,12 @@ $productPicture = $product['product_picture'] ?? '';
                 <input type="text"
                        name="name"
                        required
-                       class="mt-2 w-full rounded-2xl border border-orange-100 bg-white/70 px-4 py-3 text-sm focus:border-brand-300 focus:outline-none"
+                       class="mt-2 w-full rounded-2xl border <?= isset($_SESSION['errors']['name']) ? 'border-red-500' : 'border-orange-100' ?> bg-white/70 px-4 py-3 text-sm focus:border-brand-300 focus:outline-none"
                        placeholder="e.g. Tea"
                        value="<?= htmlspecialchars($productName) ?>"/>
-                <p class="mt-1 hidden text-xs text-red-600" data-error></p>
+                <?php if (isset($_SESSION['errors']['name'])): ?>
+                    <p class="mt-1 text-xs text-red-600" data-error><?= $_SESSION['errors']['name'] ?></p>
+                <?php endif; ?>
             </div>
 
             <div data-field>
@@ -45,10 +47,12 @@ $productPicture = $product['product_picture'] ?? '';
                        required
                        step="0.01"
                        data-validate="number" data-min="1"
-                       class="mt-2 w-full rounded-2xl border border-orange-100 bg-white/70 px-4 py-3 text-sm focus:border-brand-300 focus:outline-none"
+                       class="mt-2 w-full rounded-2xl border <?= isset($_SESSION['errors']['price']) ? 'border-red-500' : 'border-orange-100' ?> bg-white/70 px-4 py-3 text-sm focus:border-brand-300 focus:outline-none"
                        placeholder="e.g. 3.50"
                        value="<?= htmlspecialchars((string)$productPrice) ?>"/>
-                <p class="mt-1 hidden text-xs text-red-600" data-error></p>
+                <?php if (isset($_SESSION['errors']['price'])): ?>
+                    <p class="mt-1 text-xs text-red-600" data-error><?= $_SESSION['errors']['price'] ?></p>
+                <?php endif; ?>
             </div>
 
             <div data-field>
@@ -56,7 +60,7 @@ $productPicture = $product['product_picture'] ?? '';
                 <select
                         name="category_id"
                         required
-                        class="mt-2 w-full rounded-2xl border border-orange-100 bg-white/70 px-4 py-3 text-sm focus:border-brand-300 focus:outline-none">
+                        class="mt-2 w-full rounded-2xl border <?= isset($_SESSION['errors']['category_id']) ? 'border-red-500' : 'border-orange-100' ?> bg-white/70 px-4 py-3 text-sm focus:border-brand-300 focus:outline-none">
                     <option value="">Choose category</option>
                     <?php foreach ($categories as $category): ?>
                         <option value="<?= $category["id"] ?>" <?= $selectedCategoryId === (string)$category["id"] ? 'selected' : '' ?>>
@@ -64,14 +68,20 @@ $productPicture = $product['product_picture'] ?? '';
                         </option>
                     <?php endforeach; ?>
                 </select>
-                <p class="mt-1 hidden text-xs text-red-600" data-error></p>
+                <?php if (isset($_SESSION['errors']['category_id'])): ?>
+                    <p class="mt-1 text-xs text-red-600" data-error><?= $_SESSION['errors']['category_id'] ?></p>
+                <?php endif; ?>
             </div>
 
             <div data-field>
                 <label class="text-sm font-medium text-slate-700">Product Picture</label>
                 <input type="file"
                        name="product_image"
-                       class="mt-2 w-full rounded-2xl border border-dashed border-orange-200 bg-orange-50/50 px-4 py-3 text-sm"/>
+                       <?= !$isEdit ? 'required' : '' ?>
+                       class="mt-2 w-full rounded-2xl border border-dashed <?= isset($_SESSION['errors']['product_image']) ? 'border-red-500 bg-red-50/50' : 'border-orange-200 bg-orange-50/50' ?> px-4 py-3 text-sm"/>
+                <?php if (isset($_SESSION['errors']['product_image'])): ?>
+                    <p class="mt-1 text-xs text-red-600" data-error><?= $_SESSION['errors']['product_image'] ?></p>
+                <?php endif; ?>
                 <?php if ($productPicture !== ''): ?>
                     <div class="mt-3 flex items-center gap-3 rounded-2xl bg-orange-50 px-3 py-3">
                         <img src="<?= url('/' . $productPicture) ?>" alt="<?= htmlspecialchars($productName) ?>"
@@ -79,13 +89,20 @@ $productPicture = $product['product_picture'] ?? '';
                         <p class="text-xs text-slate-500">Current image will be kept unless you upload a replacement.</p>
                     </div>
                 <?php endif; ?>
-                <p class="mt-1 hidden text-xs text-red-600" data-error></p>
             </div>
 
-            <div class="hidden rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-xs text-red-600"
-                 data-form-alert>
-                Please fix the highlighted fields.
-            </div>
+            <?php if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
+                <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-xs text-red-600"
+                     data-form-alert>
+                    Please fix the highlighted fields.
+                </div>
+                <?php unset($_SESSION['errors']); ?>
+            <?php else: ?>
+                <div class="hidden rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-xs text-red-600"
+                     data-form-alert>
+                    Please fix the highlighted fields.
+                </div>
+            <?php endif; ?>
 
             <div class="flex flex-wrap gap-3">
                 <button type="submit" class="rounded-2xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white">
