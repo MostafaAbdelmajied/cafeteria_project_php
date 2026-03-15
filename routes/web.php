@@ -47,10 +47,10 @@ Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
     //admin users routes
     Router::get("/admin/users", [AdminUsersController::class, "users"]);
     Router::get("/admin/users/create", [AdminUsersController::class, "createUser"]);
-    Router::get("/admin/users/store", [AdminUsersController::class, "storeUser"]);
-    Router::get("/admin/users/delete", [AdminUsersController::class, "destroyUser"]);
+    Router::post("/admin/users/store", [AdminUsersController::class, "storeUser"]);
+    Router::post("/admin/users/delete", [AdminUsersController::class, "destroyUser"]);
     Router::get("/admin/users/edit", [AdminUsersController::class, "editUser"]);
-    Router::get("/admin/users/update", [AdminUsersController::class, "updateUser"]);
+    Router::post("/admin/users/update", [AdminUsersController::class, "updateUser"]);
 });
 
 Router::get("/logout", [AuthController::class, "logout"]);

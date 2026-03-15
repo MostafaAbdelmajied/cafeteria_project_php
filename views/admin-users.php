@@ -11,9 +11,17 @@ require __DIR__ . '/layout/admin-header.php';
             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">Directory</p>
             <h1 class="text-2xl font-semibold">All Users</h1>
         </div>
-        <a href="admin-add-user.php" class="rounded-full bg-brand-600 px-4 py-2 text-xs font-semibold text-white">Add
+        <a href="<?= url('/admin/users/create') ?>"
+           class="rounded-full bg-brand-600 px-4 py-2 text-xs font-semibold text-white">Add
             User</a>
     </div>
+
+    <?php if (isset($_SESSION['errors']['general'])): ?>
+        <div class="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <?= htmlspecialchars($_SESSION['errors']['general']) ?>
+        </div>
+        <?php unset($_SESSION['errors']); ?>
+    <?php endif; ?>
 
     <div class="mt-6 overflow-hidden rounded-3xl border border-orange-100 bg-white/90 shadow-lg shadow-orange-100">
         <table class="w-full text-left text-sm">
@@ -31,15 +39,27 @@ require __DIR__ . '/layout/admin-header.php';
                 <tr>
                     <td class="px-6 py-4"><?= $user["name"] ?></td>
                     <td class="px-6 py-4"><?= $user["room_no"] ?></td>
-                    <td class="px-6 py-4 text-lg"><img src="<?= $user["profile_picture"] ?>" alt="<?= $user["name"] ?>">
+                    <td class="px-6 py-4 text-lg">
+                        <?php if (!empty($user['profile_picture'])): ?>
+                            <img src="<?= url('/' . $user["profile_picture"]) ?>"
+                                 alt="<?= $user["name"] ?>" class="h-10 w-10 rounded-lg object-cover">
+                        <?php else: ?>
+                            <span class="text-xs text-slate-400 italic">No image</span>
+                        <?php endif; ?>
                     </td>
                     <td class="px-6 py-4"><?= $user["ext"] ?></td>
                     <td class="px-6 py-4">
                         <div class="flex flex-wrap items-center gap-2">
-                            <button class="rounded-full border border-orange-200 px-3 py-1 text-xs">edit</button>
-                            <button class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">
-                                delete
-                            </button>
+                            <a href="<?= url('/admin/users/edit?id=' . $user['id']) ?>"
+                               class="rounded-full border border-orange-200 px-3 py-1 text-xs font-semibold text-orange-600 transition-all hover:bg-orange-500 hover:text-white">edit</a>
+                            <form action="<?= url('/admin/users/delete') ?>" method="post" style="display: inline"
+                                  onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                <input type="hidden" name="id" value="<?= (int)$user["id"] ?>">
+                                <button type="submit"
+                                        class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600 transition-all hover:border-red-600 hover:bg-transparent border border-transparent">
+                                    delete
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>
@@ -48,8 +68,8 @@ require __DIR__ . '/layout/admin-header.php';
         </table>
     </div>
     <?php
-    require_once "views/layout/paginator.php"
-    ?>ء
+    require __DIR__ . '/layout/paginator.php'
+    ?>
 </main>
 
 <?php
