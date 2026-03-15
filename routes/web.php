@@ -34,10 +34,6 @@ Router::group(['middleware' => TypeMiddleware::class . ':user'], function () {
 
 Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
     //admin routes
-    Router::get("/admin", [AdminController::class, "index"]);
-    Router::get("/admin/products", [AdminController::class, "adminProducts"]);
-    Router::get("/admin/orders", [AdminController::class, "adminOrders"]);
-    Router::get("/admin/users", [AdminController::class, "adminUsers"]);
     Router::get("/admin-manual-order", [AdminOrderController::class, "showManualOrder"]);
     Router::post("/admin/manual-order/submit", [AdminOrderController::class, "submitManualOrder"]);
     Router::post("/admin/orders/deliver", [AdminOrderController::class, "markAsDelivered"]);
