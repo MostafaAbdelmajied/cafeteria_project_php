@@ -1,7 +1,7 @@
 <?php
 
 use Src\Classes\Router;
-use Src\Controllers\AdminController;
+use Src\Controllers\Admin\AdminProductsController;
 use Src\Controllers\AuthController;
 use Src\Controllers\Home\HomeController;
 use Src\Controllers\OrderController;
@@ -9,6 +9,7 @@ use Src\Controllers\PasswordResetController;
 use Src\Controllers\UserController;
 use Src\Middleware\Guest;
 use Src\Middleware\TypeMiddleware;
+use Src\Controllers\Admin\AdminUsersController;
 
 Router::group(['middleware' => Guest::class], function () {
     Router::get("/login", [AuthController::class, "showLogin"]);
@@ -31,10 +32,25 @@ Router::group(['middleware' => TypeMiddleware::class . ':user'], function () {
 
 Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
     //admin routes
-    Router::get("/admin", [AdminController::class, "index"]);
-    Router::get("/admin/products", [AdminController::class, "adminProducts"]);
-    Router::get("/admin/orders", [AdminController::class, "adminOrders"]);
-    Router::get("/admin/users", [AdminController::class, "adminUsers"]);
+
+    Router::get("/admin", [AdminProductsController::class, "index"]);
+    // admin products routes
+    Router::get("/admin/products", [AdminProductsController::class, "products"]);
+    Router::get("/admin/orders", [AdminProductsController::class, "orders"]);
+    Router::get("/admin/products/create", [AdminProductsController::class, "createProduct"]);
+    Router::post("/admin/products/store", [AdminProductsController::class, "storeProduct"]);
+    Router::post("/admin/products/delete", [AdminProductsController::class, "destroyProduct"]);
+    Router::get("/admin/products/edit", [AdminProductsController::class, "editProduct"]);
+    Router::post("/admin/products/update", [AdminProductsController::class, "updateProduct"]);
+    Router::post("/admin/products/toggle-available", [AdminProductsController::class, "toggleProductAvailability"]);
+
+    //admin users routes
+    Router::get("/admin/users", [AdminUsersController::class, "users"]);
+    Router::get("/admin/users/create", [AdminUsersController::class, "createUser"]);
+    Router::get("/admin/users/store", [AdminUsersController::class, "storeUser"]);
+    Router::get("/admin/users/delete", [AdminUsersController::class, "destroyUser"]);
+    Router::get("/admin/users/edit", [AdminUsersController::class, "editUser"]);
+    Router::get("/admin/users/update", [AdminUsersController::class, "updateUser"]);
 });
 
 Router::get("/logout", [AuthController::class, "logout"]);
