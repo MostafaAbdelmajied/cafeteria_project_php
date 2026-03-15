@@ -182,7 +182,7 @@ abstract class Model
             $i++;
         }
 
-        $sql .= "WHERE id = ?";
+        $sql .= " WHERE id = ?";
         $parameters[] = $id;
 
         $stmt = DB::conn()->prepare($sql);

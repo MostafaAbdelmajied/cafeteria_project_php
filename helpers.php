@@ -12,7 +12,14 @@ function view($path, $data = []){
 }
 
 function url($path){
-    return dirname($_SERVER['SCRIPT_NAME']) . $path;
+    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+    $basePath = str_replace('\\', '/', dirname($scriptName));
+
+    if ($basePath === '/' || $basePath === '.') {
+        $basePath = '';
+    }
+
+    return rtrim($basePath, '/') . '/' . ltrim($path, '/');
 }
 
 function redirect($url)
