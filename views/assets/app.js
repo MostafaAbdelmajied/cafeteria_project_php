@@ -50,6 +50,35 @@
     return '';
   };
 
+  // Image Preview Logic
+  document.querySelectorAll('[data-image-preview]').forEach((input) => {
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      const container = e.target.closest('[data-field]');
+      if (!container) return;
+
+      const previewContainer = container.querySelector('[data-preview-container]');
+      const previewImg = container.querySelector('[data-preview-img]');
+      const placeholder = container.querySelector('[data-upload-placeholder]');
+      const currentImgContainer = container.querySelector('[data-current-img-container]');
+
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (previewImg) previewImg.src = event.target.result;
+          if (previewContainer) {
+            previewContainer.classList.remove('hidden');
+            previewContainer.classList.add('flex');
+          }
+          if (placeholder) placeholder.classList.add('hidden');
+          if (currentImgContainer) currentImgContainer.classList.add('opacity-50');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  });
+
+  // Form Handling
   document.querySelectorAll('[data-validate-form]').forEach((form) => {
     form.addEventListener('submit', (event) => {
       const fields = form.querySelectorAll('input, textarea, select');
@@ -85,8 +114,20 @@
         event.preventDefault();
       }
     });
+
+    form.addEventListener('reset', () => {
+      form.querySelectorAll('[data-preview-container]').forEach(el => {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      });
+      form.querySelectorAll('[data-upload-placeholder]').forEach(el => el.classList.remove('hidden'));
+      form.querySelectorAll('[data-current-img-container]').forEach(el => el.classList.remove('opacity-50'));
+      form.querySelectorAll('[data-error]').forEach(el => el.classList.add('hidden'));
+      form.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
+    });
   });
 
+  // Toggle Logic
   document.querySelectorAll('[data-toggle]').forEach((toggle) => {
     toggle.addEventListener('click', () => {
       const targetId = toggle.getAttribute('data-toggle');
