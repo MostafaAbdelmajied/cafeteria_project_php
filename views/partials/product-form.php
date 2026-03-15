@@ -75,18 +75,41 @@ $productPicture = $product['product_picture'] ?? '';
 
             <div data-field>
                 <label class="text-sm font-medium text-slate-700">Product Picture</label>
-                <input type="file"
-                       name="product_image"
-                       <?= !$isEdit ? 'required' : '' ?>
-                       class="mt-2 w-full rounded-2xl border border-dashed <?= isset($_SESSION['errors']['product_image']) ? 'border-red-500 bg-red-50/50' : 'border-orange-200 bg-orange-50/50' ?> px-4 py-3 text-sm"/>
+                <div class="mt-2">
+                    <label class="flex w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed <?= isset($_SESSION['errors']['product_image']) ? 'border-red-300 bg-red-50/50' : 'border-orange-200 bg-orange-50/50' ?> px-6 py-6 transition-all hover:bg-orange-100/50">
+                        <div class="flex flex-col items-center justify-center space-y-2 text-center" data-upload-placeholder>
+                            <div class="rounded-full bg-orange-100 p-3 text-orange-600">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                </svg>
+                            </div>
+                            <div class="text-sm text-slate-600">
+                                <span class="font-semibold text-brand-600">Click to upload</span>
+                                <span class="hidden sm:inline"> or drag and drop</span>
+                            </div>
+                            <p class="text-xs text-slate-500">PNG, JPG or GIF (max. 2MB)</p>
+                        </div>
+
+                        <div class="hidden w-full flex-col items-center justify-center space-y-2" data-preview-container>
+                            <img src="" alt="Preview" class="h-32 w-32 rounded-2xl object-cover shadow-lg" data-preview-img>
+                            <p class="text-xs font-medium text-brand-600">Click to change</p>
+                        </div>
+
+                        <input type="file"
+                               name="product_image"
+                               <?= !$isEdit ? 'required' : '' ?>
+                               class="hidden"
+                               data-image-preview/>
+                    </label>
+                </div>
                 <?php if (isset($_SESSION['errors']['product_image'])): ?>
                     <p class="mt-1 text-xs text-red-600" data-error><?= $_SESSION['errors']['product_image'] ?></p>
                 <?php endif; ?>
                 <?php if ($productPicture !== ''): ?>
-                    <div class="mt-3 flex items-center gap-3 rounded-2xl bg-orange-50 px-3 py-3">
+                    <div class="mt-3 flex items-center gap-3 rounded-2xl bg-orange-50 px-3 py-3" data-current-img-container>
                         <img src="<?= url('/' . $productPicture) ?>" alt="<?= htmlspecialchars($productName) ?>"
                              class="h-14 w-14 rounded-xl object-cover">
-                        <p class="text-xs text-slate-500">Current image will be kept unless you upload a replacement.</p>
+                        <p class="text-xs text-slate-500">Current image will be replaced if you upload a new one.</p>
                     </div>
                 <?php endif; ?>
             </div>

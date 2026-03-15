@@ -4,4 +4,8 @@ vendor/
 firebase-debug.log
 composer.lock
 composer.phar
-./storage/*
+
+package.xml
+/storage/*
+/xdebug-3.5.1/*
+xdebug-3.5.1.tgz
