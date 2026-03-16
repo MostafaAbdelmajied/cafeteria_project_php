@@ -82,17 +82,16 @@ Suggested accounts for demonstration:
 
 | Role | Email | Password |
 | --- | --- | --- |
-| Admin | `ahmed.hassan@example.com` | Any non-empty value |
-| Admin | `omar.khaled@example.com` | Any non-empty value |
-| User | `sara.ali@example.com` | Any non-empty value |
-| User | `m.youssef@example.com` | Any non-empty value |
+| Admin | `ahmed.hassan@example.com` | `12345678` |
+| Admin | `omar.khaled@example.com` | `12345678` |
+| User | `sara.ali@example.com` | `12345678` |
+| User | `m.youssef@example.com` | `12345678` |
 
 ## Authentication Note
 
-- The current login controller checks that the email exists and that the password field is not empty.
-- It does not currently verify the password hash against the entered password.
-- For that reason, any non-empty password works with an existing seeded email in the current version of the project.
-- This behavior should be fixed before production use, but it may help your supervisor run the project quickly during evaluation.
+- The login flow now verifies the entered password against the stored hashed password using `password_verify(...)`.
+- The seeded users imported from [backup.sql](c:/xampp/htdocs/cafeteria/backup.sql) use the password `12345678`.
+- New and updated user passwords are stored as hashed values in the database.
 
 ## Screenshots
 
