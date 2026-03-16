@@ -99,7 +99,7 @@ Add the actual screenshots in the table below when ready.
 
 | View | Screenshot |
 | --- | --- |
-| Login | `Add image here` |
+| Login |<img width="581" height="467" alt="image" src="https://github.com/user-attachments/assets/d19c166a-0b0e-4793-bb95-4d252daf7e65" />|
 | Home / Products | <img width="1141" height="821" alt="image" src="https://github.com/user-attachments/assets/3caf6403-e9e2-435d-93bd-90946910ec6c" />|
 | Cart / Order Form | <img width="443" height="707" alt="image" src="https://github.com/user-attachments/assets/080023c2-1436-4d9d-9391-9c4cdc76d627" />|
 | Order Confirmation | <img width="1133" height="732" alt="image" src="https://github.com/user-attachments/assets/4b5e2dab-d79c-4f29-a034-ae91ada5581c" />|
