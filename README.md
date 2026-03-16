@@ -98,7 +98,7 @@ Suggested accounts for demonstration:
 | View | Screenshot |
 | --- | --- |
 | Login | <img src="project_images/login.png"> |
-| Home / Products | <img src="project_images/customer_home.png"> |
+| Home / Products | <img width="1347" height="833" alt="image" src="https://github.com/user-attachments/assets/daedf7a2-1a3c-4bf8-90b0-fd24ebf30150" />|
 | Order Confirmation | <img src="project_images/customer_create_order.png"> |
 | My Orders | <img src="project_images/customer_orders_view.png"> |
 | Order Details| <img src="project_images/customer_order_details.png"> |
