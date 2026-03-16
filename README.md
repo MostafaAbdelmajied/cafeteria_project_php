@@ -100,8 +100,7 @@ Add the actual screenshots in the table below when ready.
 | View | Screenshot |
 | --- | --- |
 | Login | `Add image here` |
-| Home / Products | `<img width="1141" height="821" alt="image" src="https://github.com/user-attachments/assets/3caf6403-e9e2-435d-93bd-90946910ec6c" />
-` |
+| Home / Products | <img width="1141" height="821" alt="image" src="https://github.com/user-attachments/assets/3caf6403-e9e2-435d-93bd-90946910ec6c" />|
 | Cart / Order Form | `Add image here` |
 | Order Confirmation | `Add image here` |
 | My Orders | `Add image here` |
