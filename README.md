@@ -109,8 +109,3 @@ Add the actual screenshots in the table below when ready.
 | Admin Manual Order | <img src="project_images/admin_manual_order.png"> |
 | Admin Orders / Delivery | <img src="project_images/admin_orders_view.png"> |
 | Reports / Checks | <img src="project_images/checks.png"> |
-
-## Notes
-
-- The screenshots section is intentionally left with placeholders so real project images can be inserted later.
-- This README can be expanded later with installation steps, database setup, and usage instructions if needed.
