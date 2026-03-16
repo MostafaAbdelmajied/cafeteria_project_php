@@ -27,3 +27,34 @@ function redirect($url)
     header("Location: $url");
     exit;
 }
+
+
+if (!function_exists('setFlash')) {
+    function setFlash($type, $message)
+    {
+        $_SESSION['flash'] = ['type' => $type, 'message' => $message];
+    }
+}
+
+if (!function_exists('getFlash')) {
+    function getFlash()
+    {
+        $flash = isset($_SESSION['flash']) ? $_SESSION['flash'] : null;
+        unset($_SESSION['flash']);
+        return $flash;
+    }
+}
+
+if (!function_exists('render')) {
+    function render($view, $data = [])
+    {
+        extract($data);
+        $path = __DIR__ . '/views/' . $view . '.php';
+        if (!file_exists($path)) {
+            http_response_code(404);
+            require __DIR__ . '/views/errors/404.php';
+            exit;
+        }
+        require $path;
+    }
+}

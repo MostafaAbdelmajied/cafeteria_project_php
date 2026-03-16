@@ -30,6 +30,12 @@ Router::group(['middleware' => TypeMiddleware::class . ':user'], function () {
     Router::post("/order-cancel", [OrderController::class, "cancel"]);
     Router::post("/order-submit", [OrderController::class, "submit"]);
 
+     // order routes from ali
+    Router::get('/my-orders',     [OrderController::class, 'myOrders']);
+    Router::get('/order-details', [OrderController::class, 'orderDetails']);
+    Router::post('/order/place',  [OrderController::class, 'placeOrder']);
+    Router::post('/order/cancel', [OrderController::class, 'cancelOrder']);
+
 });
 
 Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
