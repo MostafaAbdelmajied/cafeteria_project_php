@@ -110,8 +110,3 @@ Add the actual screenshots in the table below when ready.
 | Admin Manual Order | `Add image here` |
 | Admin Orders / Delivery | `Add image here` |
 | Reports / Checks | `Add image here` |
-
-## Notes
-
-- The screenshots section is intentionally left with placeholders so real project images can be inserted later.
-- This README can be expanded later with installation steps, database setup, and usage instructions if needed.
