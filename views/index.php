@@ -22,30 +22,30 @@ require __DIR__ . '/layout/user-header.php';
     <?php unset($_SESSION['order_success']); ?>
   <?php endif; ?>
 
-  <div class="grid gap-8 lg:grid-cols-[1.05fr_1.6fr]" data-cart-scope>
-    <section class="rounded-3xl bg-white/90 p-6 shadow-lg shadow-orange-100" data-cart>
+  <div class="grid gap-8 lg:grid-cols-[1.05fr_1.6fr] lg:items-start" data-cart-scope>
+    <section class="rounded-3xl bg-white/90 p-4 shadow-lg shadow-orange-100" data-cart>
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-semibold">Current Order</h2>
-        <span class="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-brand-700">Room Selection</span>
+        <span class="rounded-full bg-orange-100 px-2.5 py-0.5 text-[11px] font-medium text-brand-700">Room Selection</span>
       </div>
 
-      <form method="post" action="<?= url('/order-confirm'); ?>" class="mt-6 space-y-4" data-validate-form data-require-cart>
+      <form method="post" action="<?= url('/order-confirm'); ?>" class="mt-4 space-y-2.5" data-validate-form data-require-cart>
         <input type="hidden" name="cart_data" id="cart_data" value="" />
-        <div class="space-y-4" data-cart-items></div>
+        <div class="space-y-2.5" data-cart-items></div>
 
         <div>
-          <label class="text-sm font-semibold text-slate-700">Notes</label>
+          <label class="text-xs font-semibold uppercase tracking-wide text-slate-600">Notes</label>
           <textarea
             name="notes"
-            class="mt-2 w-full rounded-2xl border border-orange-100 bg-white/70 p-3 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-orange-100"
-            rows="3"
+            class="mt-1.5 w-full rounded-2xl border border-orange-100 bg-white/70 p-2 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-orange-100"
+            rows="1"
             placeholder="e.g. Extra sugar"><?= htmlspecialchars($savedNote, ENT_QUOTES, 'UTF-8'); ?></textarea>
         </div>
 
         <div data-field>
-          <label class="text-sm font-semibold text-slate-700">Room</label>
+          <label class="text-xs font-semibold uppercase tracking-wide text-slate-600">Room</label>
           <select required name="room"
-            class="mt-2 w-full rounded-2xl border border-orange-100 bg-white/70 p-3 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-orange-100">
+            class="mt-1.5 w-full rounded-2xl border border-orange-100 bg-white/70 p-2 text-sm focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-orange-100">
             <option value="">Select a room</option>
             <?php foreach (($rooms ?? []) as $room): ?>
               <option value="<?= htmlspecialchars($room, ENT_QUOTES, 'UTF-8'); ?>" <?= $savedRoom === (string) $room ? 'selected' : ''; ?>>
@@ -56,17 +56,17 @@ require __DIR__ . '/layout/user-header.php';
           <p class="mt-1 hidden text-xs text-red-600" data-error></p>
         </div>
 
-        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-xs text-red-600 hidden" data-form-alert>
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs text-red-600 hidden" data-form-alert>
           Please fix the highlighted fields.
         </div>
 
-        <div class="mt-2 flex items-center justify-between border-t border-orange-100 pt-4 text-base font-semibold">
+        <div class="mt-1 flex items-center justify-between border-t border-orange-100 pt-2.5 text-sm font-semibold">
           <span>Total</span>
           <span class="text-brand-700" data-cart-total>EGP 0</span>
         </div>
 
         <button
-          class="mt-2 w-full rounded-2xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-brand-700"
+          class="mt-1 w-full rounded-2xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-brand-700"
           type="submit">
           Confirm Order
         </button>
@@ -98,8 +98,8 @@ require __DIR__ . '/layout/user-header.php';
         </form>
       </div>
 
-      <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-products-grid data-search-url="<?= htmlspecialchars(url('/'), ENT_QUOTES, 'UTF-8'); ?>">
-        <?php view('partials/products-grid.php', compact('products', 'searchTerm')); ?>
+      <div class="mt-6" data-products-grid data-search-url="<?= htmlspecialchars(url('/'), ENT_QUOTES, 'UTF-8'); ?>">
+        <?php view('partials/products-browser.php', compact('products', 'searchTerm', 'currentPage', 'totalPages')); ?>
       </div>
     </section>
   </div>
@@ -206,9 +206,13 @@ $inlineScript = <<<'JS'
 
           if (!cart.size) {
             const empty = document.createElement('p');
-            empty.className = 'py-6 text-center text-sm text-slate-500';
+            empty.className = 'rounded-2xl border border-dashed border-orange-100 px-3 py-3 text-center text-sm text-slate-500';
             empty.textContent = 'No items yet. Select a product.';
             cartItemsEl.appendChild(empty);
+            if (cartTotalEl) {
+              cartTotalEl.textContent = currency(0);
+            }
+            return;
           }
 
           const header = document.createElement('div');
@@ -248,7 +252,7 @@ $inlineScript = <<<'JS'
           }
         };
 
-        const fetchProducts = async (searchTerm, pushState = true) => {
+        const fetchProducts = async (searchTerm, page = 1, pushState = true) => {
           if (!productsGrid || !searchForm) return;
 
           if (activeSearchController) {
@@ -261,6 +265,9 @@ $inlineScript = <<<'JS'
           const url = new URL(baseUrl, window.location.origin);
           if (searchTerm) {
             url.searchParams.set('search', searchTerm);
+          }
+          if (page > 1) {
+            url.searchParams.set('page', page);
           }
           url.searchParams.set('partial', 'products');
 
@@ -283,7 +290,10 @@ $inlineScript = <<<'JS'
               if (searchTerm) {
                 browserUrl.searchParams.set('search', searchTerm);
               }
-              window.history.pushState({ search: searchTerm }, '', browserUrl.toString());
+              if (page > 1) {
+                browserUrl.searchParams.set('page', page);
+              }
+              window.history.pushState({ search: searchTerm, page }, '', browserUrl.toString());
             }
 
             if (clearSearchBtn) {
@@ -313,6 +323,16 @@ $inlineScript = <<<'JS'
         };
 
         menuRoot.addEventListener('click', (event) => {
+          const pageLink = event.target.closest('[data-page-link]');
+          if (pageLink) {
+            event.preventDefault();
+            const pageUrl = new URL(pageLink.href, window.location.origin);
+            const nextPage = parseInt(pageUrl.searchParams.get('page') || '1', 10);
+            const currentSearch = searchInput ? searchInput.value.trim() : '';
+            fetchProducts(currentSearch, nextPage, true);
+            return;
+          }
+
           const products = getProducts();
           const actionBtn = event.target.closest('[data-action="add"]');
           if (actionBtn) {
@@ -376,27 +396,29 @@ $inlineScript = <<<'JS'
         if (searchForm && searchInput) {
           searchForm.addEventListener('submit', (event) => {
             event.preventDefault();
-            fetchProducts(searchInput.value.trim());
+            fetchProducts(searchInput.value.trim(), 1);
           });
 
           searchInput.addEventListener('input', () => {
             window.clearTimeout(searchTimeout);
             searchTimeout = window.setTimeout(() => {
-              fetchProducts(searchInput.value.trim());
+              fetchProducts(searchInput.value.trim(), 1);
             }, 250);
           });
 
           window.addEventListener('popstate', () => {
-            const currentSearch = new URL(window.location.href).searchParams.get('search') || '';
+            const currentUrl = new URL(window.location.href);
+            const currentSearch = currentUrl.searchParams.get('search') || '';
+            const currentPage = parseInt(currentUrl.searchParams.get('page') || '1', 10);
             searchInput.value = currentSearch;
-            fetchProducts(currentSearch, false);
+            fetchProducts(currentSearch, currentPage, false);
           });
         }
 
         if (clearSearchBtn && searchInput) {
           clearSearchBtn.addEventListener('click', () => {
             searchInput.value = '';
-            fetchProducts('', true);
+            fetchProducts('', 1, true);
           });
         }
 

@@ -8,9 +8,12 @@ use Src\Models\User;
 
 class HomeController
 {
+    private const PER_PAGE = 6;
+
     public function index()
     {
         $searchTerm = trim((string) ($_GET['search'] ?? ''));
+        $requestedPage = max(1, (int) ($_GET['page'] ?? 1));
 
         // $sql = 'SELECT p.*, c.name AS category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.is_available = 1';
         $products = Product::query()->where('is_available', 1)->get();
@@ -38,6 +41,12 @@ class HomeController
             }));
         }
 
+        $totalProducts = count($products);
+        $totalPages = max(1, (int) ceil($totalProducts / self::PER_PAGE));
+        $currentPage = min($requestedPage, $totalPages);
+        $offset = ($currentPage - 1) * self::PER_PAGE;
+        $products = array_slice($products, $offset, self::PER_PAGE);
+
         $rooms = [];
         foreach ($users as $user) {
             $roomNo = trim((string) ($user['room_no'] ?? ''));
@@ -49,9 +58,9 @@ class HomeController
         $rooms = array_values($rooms);
 
         if (isset($_GET['partial']) && $_GET['partial'] === 'products') {
-            return view('partials/products-grid.php', compact('products', 'searchTerm'));
+            return view('partials/products-browser.php', compact('products', 'searchTerm', 'currentPage', 'totalPages'));
         }
         $activePage = 'home';
-        return view('index.php', compact('products', 'searchTerm', 'rooms', 'activePage'));
+        return view('index.php', compact('products', 'searchTerm', 'rooms', 'activePage', 'currentPage', 'totalPages'));
     }
 }
