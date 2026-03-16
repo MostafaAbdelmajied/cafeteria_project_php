@@ -49,7 +49,7 @@ require __DIR__ . '/layout/admin-header.php';
                     <td class="px-6 py-4"><?= htmlspecialchars($order['order_date'], ENT_QUOTES, 'UTF-8') ?></td>
                     <td class="px-6 py-4"><?= htmlspecialchars($order['user_name'], ENT_QUOTES, 'UTF-8') ?></td>
                     <td class="px-6 py-4"><?= htmlspecialchars($order['room'], ENT_QUOTES, 'UTF-8') ?></td>
-                    <td class="px-6 py-4"><?= htmlspecialchars($order['ext'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td class="px-6 py-4"><?= htmlspecialchars($order['ext'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                     <td class="px-6 py-4">
                       <?php if ($order['status'] === 'Processing'): ?>
                         <form method="post" action="<?= url('/admin/orders/deliver') ?>" class="inline-block" onclick="event.stopPropagation()">

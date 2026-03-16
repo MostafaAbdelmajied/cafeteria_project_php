@@ -44,11 +44,11 @@ Router::group(['middleware' => TypeMiddleware::class . ':admin'], function () {
     Router::post("/admin/manual-order/submit", [AdminOrderController::class, "submitManualOrder"]);
     Router::post("/admin/orders/deliver", [AdminOrderController::class, "markAsDelivered"]);
     Router::get("/admin/checks", [AdminController::class, "adminChecks"]);
+    Router::get("/admin/orders", [AdminController::class, "adminOrders"]);
 
     Router::get("/admin", [AdminProductsController::class, "index"]);
     // admin products routes
     Router::get("/admin/products", [AdminProductsController::class, "products"]);
-    Router::get("/admin/orders", [AdminProductsController::class, "orders"]);
     Router::get("/admin/products/create", [AdminProductsController::class, "createProduct"]);
     Router::post("/admin/products/store", [AdminProductsController::class, "storeProduct"]);
     Router::post("/admin/products/delete", [AdminProductsController::class, "destroyProduct"]);
