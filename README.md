@@ -99,14 +99,13 @@ Add the actual screenshots in the table below when ready.
 
 | View | Screenshot |
 | --- | --- |
-| Login |<img width="581" height="467" alt="image" src="https://github.com/user-attachments/assets/d19c166a-0b0e-4793-bb95-4d252daf7e65" />|
-| Home / Products | <img width="1141" height="821" alt="image" src="https://github.com/user-attachments/assets/3caf6403-e9e2-435d-93bd-90946910ec6c" />|
-| Cart / Order Form | <img width="443" height="707" alt="image" src="https://github.com/user-attachments/assets/080023c2-1436-4d9d-9391-9c4cdc76d627" />|
-| Order Confirmation | <img width="1133" height="732" alt="image" src="https://github.com/user-attachments/assets/4b5e2dab-d79c-4f29-a034-ae91ada5581c" />|
-| My Orders | <img width="1080" height="863" alt="image" src="https://github.com/user-attachments/assets/0b268d11-1048-4ba7-b07b-d254d96ff825" />|
-| Order Details | `Add image here` |
-| Admin Products | `Add image here` |
-| Admin Users | `Add image here` |
-| Admin Manual Order | `Add image here` |
-| Admin Orders / Delivery | `Add image here` |
-| Reports / Checks | `Add image here` |
+| Login | <img src="project_images/login.png"> |
+| Home / Products | <img src="project_images/customer_home.png"> |
+| Order Confirmation | <img src="project_images/customer_create_order.png"> |
+| My Orders | <img src="project_images/customer_orders_view.png"> |
+| Order Details| <img src="project_images/customer_order_details.png"> |
+| Admin Products | <img src="project_images/admin_products.png"> |
+| Admin Users | <img src="project_images/admin_view_users.png"> |
+| Admin Manual Order | <img src="project_images/admin_manual_order.png"> |
+| Admin Orders / Delivery | <img src="project_images/admin_orders_view.png"> |
+| Reports / Checks | <img src="project_images/checks.png"> |
