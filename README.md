@@ -99,17 +99,16 @@ Add the actual screenshots in the table below when ready.
 
 | View | Screenshot |
 | --- | --- |
-| Login | `Add image here` |
-| Home / Products | `Add image here` |
-| Cart / Order Form | `Add image here` |
-| Order Confirmation | `Add image here` |
-| My Orders | `Add image here` |
-| Order Details | `Add image here` |
-| Admin Products | `Add image here` |
-| Admin Users | `Add image here` |
-| Admin Manual Order | `Add image here` |
-| Admin Orders / Delivery | `Add image here` |
-| Reports / Checks | `Add image here` |
+| Login | <img src="project_images/login.png"> |
+| Home / Products | <img src="project_images/customer_home.png"> |
+| Order Confirmation | <img src="project_images/customer_create_order.png"> |
+| My Orders | <img src="project_images/customer_orders_view.png"> |
+| Order Details| <img src="project_images/customer_order_details.png"> |
+| Admin Products | <img src="project_images/admin_products.png"> |
+| Admin Users | <img src="project_images/admin_view_users.png"> |
+| Admin Manual Order | <img src="project_images/admin_manual_order.png"> |
+| Admin Orders / Delivery | <img src="project_images/admin_orders_view.png"> |
+| Reports / Checks | <img src="project_images/checks.png"> |
 
 ## Notes
 
