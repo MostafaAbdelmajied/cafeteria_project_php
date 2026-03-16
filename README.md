@@ -95,8 +95,6 @@ Suggested accounts for demonstration:
 
 ## Screenshots
 
-Add the actual screenshots in the table below when ready.
-
 | View | Screenshot |
 | --- | --- |
 | Login | <img src="project_images/login.png"> |
