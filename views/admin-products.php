@@ -16,22 +16,22 @@ require __DIR__ . '/layout/admin-header.php';
             Product</a>
     </div>
 
-    <div class="mt-6 overflow-hidden rounded-3xl border border-orange-100 bg-white/90 shadow-lg shadow-orange-100">
-        <table class="w-full text-left text-sm">
+    <div class="mt-6 overflow-x-auto rounded-3xl border border-orange-100 bg-white/90 shadow-lg shadow-orange-100">
+        <table class="min-w-[640px] w-full text-left text-sm">
             <thead class="bg-orange-50 text-xs uppercase tracking-wide text-slate-500">
             <tr>
-                <th class="px-6 py-4">Product</th>
-                <th class="px-6 py-4">Price</th>
-                <th class="px-6 py-4">Image</th>
-                <th class="px-6 py-4">Action</th>
+                <th class="px-4 py-4 sm:px-6 whitespace-nowrap">Product</th>
+                <th class="px-4 py-4 sm:px-6 whitespace-nowrap">Price</th>
+                <th class="px-4 py-4 sm:px-6 whitespace-nowrap">Image</th>
+                <th class="px-4 py-4 sm:px-6 whitespace-nowrap">Action</th>
             </tr>
             </thead>
             <tbody class="divide-y divide-orange-100">
             <?php foreach ($products as $product): ?>
                 <tr>
-                    <td class="px-6 py-4"><?= $product["name"] ?></td>
-                    <td class="px-6 py-4"><?= $product["price"] ?> EGP</td>
-                    <td class="px-6 py-4">
+                    <td class="px-4 py-4 sm:px-6 whitespace-nowrap"><?= $product["name"] ?></td>
+                    <td class="px-4 py-4 sm:px-6 whitespace-nowrap"><?= $product["price"] ?> EGP</td>
+                    <td class="px-4 py-4 sm:px-6">
                         <?php if (!empty($product['product_picture'])): ?>
                             <img src="<?= url('/' . $product['product_picture']) ?>" alt="<?= $product['name'] ?>"
                                  class="h-10 w-10 rounded-lg object-cover">
@@ -39,7 +39,7 @@ require __DIR__ . '/layout/admin-header.php';
                             <span class="text-xs text-slate-400 italic">No image</span>
                         <?php endif; ?>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-4 py-4 sm:px-6">
                         <div class="flex flex-wrap items-center gap-2">
                             <form class="inline"
                                   action="<?= url("/admin/products/toggle-available") ?>" method="post">

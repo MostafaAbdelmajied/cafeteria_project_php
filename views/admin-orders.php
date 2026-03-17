@@ -32,25 +32,25 @@ require __DIR__ . '/layout/admin-header.php';
             No orders found.
           </div>
         <?php else: ?>
-          <div class="overflow-hidden rounded-3xl border border-orange-100 bg-white/90 shadow-lg shadow-orange-100">
-            <table class="w-full text-left text-sm">
+          <div class="overflow-x-auto rounded-3xl border border-orange-100 bg-white/90 shadow-lg shadow-orange-100">
+            <table class="min-w-[720px] w-full text-left text-sm">
               <thead class="bg-orange-50 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
-                  <th class="px-6 py-4">Order Date</th>
-                  <th class="px-6 py-4">Name</th>
-                  <th class="px-6 py-4">Room</th>
-                  <th class="px-6 py-4">Ext.</th>
-                  <th class="px-6 py-4">Action</th>
+                  <th class="px-4 py-4 sm:px-6 whitespace-nowrap">Order Date</th>
+                  <th class="px-4 py-4 sm:px-6 whitespace-nowrap">Name</th>
+                  <th class="px-4 py-4 sm:px-6 whitespace-nowrap">Room</th>
+                  <th class="px-4 py-4 sm:px-6 whitespace-nowrap">Ext.</th>
+                  <th class="px-4 py-4 sm:px-6 whitespace-nowrap">Action</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-orange-100">
                 <?php foreach ($orders as $order): ?>
                   <tr class="cursor-pointer hover:bg-orange-50/50 transition" data-toggle="#admin-order-<?= $order['id'] ?>">
-                    <td class="px-6 py-4"><?= htmlspecialchars($order['order_date'], ENT_QUOTES, 'UTF-8') ?></td>
-                    <td class="px-6 py-4"><?= htmlspecialchars($order['user_name'], ENT_QUOTES, 'UTF-8') ?></td>
-                    <td class="px-6 py-4"><?= htmlspecialchars($order['room'], ENT_QUOTES, 'UTF-8') ?></td>
-                    <td class="px-6 py-4"><?= htmlspecialchars($order['ext'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                    <td class="px-6 py-4">
+                    <td class="px-4 py-4 sm:px-6 whitespace-nowrap"><?= htmlspecialchars($order['order_date'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td class="px-4 py-4 sm:px-6 whitespace-nowrap"><?= htmlspecialchars($order['user_name'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td class="px-4 py-4 sm:px-6 whitespace-nowrap"><?= htmlspecialchars($order['room'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td class="px-4 py-4 sm:px-6 whitespace-nowrap"><?= htmlspecialchars($order['ext'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                    <td class="px-4 py-4 sm:px-6 whitespace-nowrap">
                       <?php if ($order['status'] === 'Processing'): ?>
                         <form method="post" action="<?= url('/admin/orders/deliver') ?>" class="inline-block" onclick="event.stopPropagation()">
                           <input type="hidden" name="order_id" value="<?= $order['id'] ?>" />
@@ -64,7 +64,7 @@ require __DIR__ . '/layout/admin-header.php';
                     </td>
                   </tr>
                   <tr id="admin-order-<?= $order['id'] ?>" class="hidden bg-orange-50/30">
-                    <td class="px-6 py-4" colspan="5">
+                    <td class="px-4 py-4 sm:px-6" colspan="5">
                       <div class="flex flex-wrap gap-3">
                         <?php foreach ($order['items'] as $item): ?>
                           <div class="rounded-2xl border border-orange-100 bg-white px-4 py-3 flex items-center gap-3">
